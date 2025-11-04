@@ -1,0 +1,232 @@
+@custom-variant dark (&:is(.dark *));
+
+:root {
+  --font-size: 16px;
+  --background: #fdf8f6;
+  --foreground: #4a2c39;
+  --card: #ffffff;
+  --card-foreground: #4a2c39;
+  --popover: #ffffff;
+  --popover-foreground: #4a2c39;
+  --primary: #e06b75;
+  --primary-foreground: #ffffff;
+  --secondary: #f3e8ff;
+  --secondary-foreground: #4a2c39;
+  --muted: #f8f1ee;
+  --muted-foreground: #8d6e63;
+  --accent: #fce4ec;
+  --accent-foreground: #4a2c39;
+  --destructive: #d4183d;
+  --destructive-foreground: #ffffff;
+  --border: rgba(224, 107, 117, 0.2);
+  --input: transparent;
+  --input-background: #fef5f3;
+  --switch-background: #f3d2d7;
+  --font-weight-medium: 500;
+  --font-weight-normal: 400;
+  --ring: #e06b75;
+  --chart-1: #e06b75;
+  --chart-2: #f4a5b9;
+  --chart-3: #c8a2c8;
+  --chart-4: #ffb4a2;
+  --chart-5: #e8a87c;
+  --radius: 0.75rem;
+  --sidebar: #fdf8f6;
+  --sidebar-foreground: #4a2c39;
+  --sidebar-primary: #e06b75;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #fce4ec;
+  --sidebar-accent-foreground: #4a2c39;
+  --sidebar-border: rgba(224, 107, 117, 0.2);
+  --sidebar-ring: #e06b75;
+}
+
+.dark {
+  --background: #1a1a1a;
+  --foreground: #fafafa;
+  --card: #262626;
+  --card-foreground: #fafafa;
+  --popover: #262626;
+  --popover-foreground: #fafafa;
+  --primary: #e06b75;
+  --primary-foreground: #ffffff;
+  --secondary: #404040;
+  --secondary-foreground: #fafafa;
+  --muted: #404040;
+  --muted-foreground: #a3a3a3;
+  --accent: #404040;
+  --accent-foreground: #fafafa;
+  --destructive: #dc2626;
+  --destructive-foreground: #fafafa;
+  --border: rgba(224, 107, 117, 0.3);
+  --input: #404040;
+  --input-background: #262626;
+  --switch-background: #525252;
+  --ring: #e06b75;
+  --chart-1: #e06b75;
+  --chart-2: #f4a5b9;
+  --chart-3: #c8a2c8;
+  --chart-4: #ffb4a2;
+  --chart-5: #e8a87c;
+  --sidebar: #1a1a1a;
+  --sidebar-foreground: #fafafa;
+  --sidebar-primary: #e06b75;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #404040;
+  --sidebar-accent-foreground: #fafafa;
+  --sidebar-border: rgba(224, 107, 117, 0.3);
+  --sidebar-ring: #e06b75;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-input-background: var(--input-background);
+  --color-switch-background: var(--switch-background);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+  }
+
+  /* Hide scrollbars but keep functionality */
+  * {
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* Internet Explorer 10+ */
+  }
+  
+  *::-webkit-scrollbar {
+    display: none; /* WebKit */
+  }
+}
+
+@layer utilities {
+  /* Sticky Header Utilities */
+  .sticky-header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 40;
+    backdrop-filter: blur(12px);
+    background-color: rgba(255, 255, 255, 0.95);
+  }
+  
+  .dark .sticky-header {
+    background-color: rgba(38, 38, 38, 0.95);
+  }
+
+  /* Page Layout Utilities */
+  .page-with-nav {
+    padding-bottom: 5rem; /* Space for bottom navigation */
+    padding-bottom: calc(5rem + env(safe-area-inset-bottom)); /* Android navigation support */
+  }
+
+  .page-with-header {
+    padding-top: 4rem; /* Space for sticky header */
+    padding-top: calc(4rem + env(safe-area-inset-top)); /* Notch support */
+  }
+
+  /* Smooth Scrolling */
+  .smooth-scroll {
+    scroll-behavior: smooth;
+  }
+}
+
+/**
+ * Base typography. This is not applied to elements which have an ancestor with a Tailwind text class.
+ */
+@layer base {
+  :where(:not(:has([class*=" text-"]), :not(:has([class^="text-"])))) {
+    h1 {
+      font-size: var(--text-2xl);
+      font-weight: var(--font-weight-medium);
+      line-height: 1.5;
+    }
+
+    h2 {
+      font-size: var(--text-xl);
+      font-weight: var(--font-weight-medium);
+      line-height: 1.5;
+    }
+
+    h3 {
+      font-size: var(--text-lg);
+      font-weight: var(--font-weight-medium);
+      line-height: 1.5;
+    }
+
+    h4 {
+      font-size: var(--text-base);
+      font-weight: var(--font-weight-medium);
+      line-height: 1.5;
+    }
+
+    p {
+      font-size: var(--text-base);
+      font-weight: var(--font-weight-normal);
+      line-height: 1.5;
+    }
+
+    label {
+      font-size: var(--text-base);
+      font-weight: var(--font-weight-medium);
+      line-height: 1.5;
+    }
+
+    button {
+      font-size: var(--text-base);
+      font-weight: var(--font-weight-medium);
+      line-height: 1.5;
+    }
+
+    input {
+      font-size: var(--text-base);
+      font-weight: var(--font-weight-normal);
+      line-height: 1.5;
+    }
+  }
+}
+
+html {
+  font-size: var(--font-size);
+}
