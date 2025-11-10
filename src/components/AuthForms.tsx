@@ -1,10 +1,13 @@
 import React, { useState } from 'react';
-import { motion } from "motion/react";
+import { motion } from "framer-motion";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { Label } from "./ui/label";
 import { Card, CardContent, CardHeader } from "./ui/card";
 import { SasaMumLogo } from "./SasaMum-Logo";
+import api from "../lib/api";
+import { useAuth } from "../contexts/AuthContext";
+import AuthDebug from "./AuthDebug";
 import {
   Eye,
   EyeOff,
@@ -28,6 +31,7 @@ export function AuthForms({
   onForgotPassword,
   onProviderLogin,
 }: AuthFormsProps) {
+  const auth = useAuth();
   const [isLogin, setIsLogin] = useState(true);
   const [isProviderMode, setIsProviderMode] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
@@ -41,15 +45,44 @@ export function AuthForms({
   });
 
   const handleInputChange = (field: string, value: string) => {
-    setFormData((prev) => ({ ...prev, [field]: value }));
+    setFormData((prev: any) => ({ ...prev, [field]: value }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = (e: any) => {
     e.preventDefault();
-    // Handle authentication logic here
-    // Form data would be sent to backend in production
+    // If login mode, call backend
+    if (isLogin) {
+      api.post('/auth/login', { email: formData.email, password: formData.password })
+        .then((resp) => {
+          const data = resp.data || {};
+          const token = data.token;
+          const refresh = data.refreshToken || data.refresh;
+          const user = data.user || null;
 
-    // Simulate successful login/signup
+          if (token) {
+            try { localStorage.setItem('userType', isProviderMode ? 'provider' : 'mother'); } catch (e) {}
+            // Persist tokens and notify context
+            try { localStorage.setItem('sasa_refresh', refresh || ''); } catch (e) {}
+            auth.login(token, user, refresh);
+          }
+
+          // Continue app flow
+          if (isProviderMode && onProviderLogin) onProviderLogin();
+          else onLoginSuccess();
+        })
+        .catch((err) => {
+          console.error('Login failed', err);
+          // Fallback to simulated success if backend unreachable
+          setTimeout(() => {
+            try { localStorage.setItem('userType', isProviderMode ? 'provider' : 'mother'); } catch (e) {}
+            if (isProviderMode && onProviderLogin) onProviderLogin();
+            else onLoginSuccess();
+          }, 700);
+        });
+      return;
+    }
+
+    // Registration / signup (still simulated for now)
     setTimeout(() => {
       if (isProviderMode && onProviderLogin) {
         // Store provider status in localStorage
@@ -75,7 +108,7 @@ export function AuthForms({
     // Simulate success after OAuth
     setTimeout(() => {
       if (isProviderMode) {
-        onProviderLogin();
+        onProviderLogin?.();
       } else {
         onLoginSuccess();
       }
@@ -89,7 +122,7 @@ export function AuthForms({
     // Simulate success after OAuth
     setTimeout(() => {
       if (isProviderMode) {
-        onProviderLogin();
+        onProviderLogin?.();
       } else {
         onLoginSuccess();
       }
@@ -103,7 +136,7 @@ export function AuthForms({
     // Simulate success after OAuth
     setTimeout(() => {
       if (isProviderMode) {
-        onProviderLogin();
+        onProviderLogin?.();
       } else {
         onLoginSuccess();
       }

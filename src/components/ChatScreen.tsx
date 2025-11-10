@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { motion, AnimatePresence } from 'motion/react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useScrollToTop } from './utils/useScrollToTop';
 import { Card, CardContent } from './ui/card';
 import { Button } from './ui/button';

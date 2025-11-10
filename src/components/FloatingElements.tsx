@@ -1,5 +1,5 @@
 import React from 'react';
-import { motion } from 'motion/react';
+import { motion } from 'framer-motion';
 import { Heart, Star, Sparkles, Baby } from 'lucide-react';
 
 export function FloatingElements() {

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { motion } from 'motion/react';
+import { motion } from "framer-motion";
 import { ArrowLeft, Watch, Heart, Activity, Moon, TrendingUp, Bluetooth, Battery, RefreshCw } from 'lucide-react';
 import { Button } from './ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';

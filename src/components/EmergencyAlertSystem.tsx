@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { motion } from 'motion/react';
+import { motion } from 'framer-motion';
 import { ArrowLeft, AlertTriangle, Phone, MapPin, Users, Clock, Send, CheckCircle, Activity } from 'lucide-react';
 import { Button } from './ui/button';
 import { Card } from './ui/card';

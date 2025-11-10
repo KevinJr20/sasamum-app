@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { motion } from 'motion/react';
+import { motion } from 'framer-motion';
 import { useScrollToTop } from './utils/useScrollToTop';
 import { Card, CardContent, CardHeader } from './ui/card';
 import { Button } from './ui/button';
@@ -33,8 +33,12 @@ import {
   Globe,
   MapPin,
   Phone,
-  Mail
+  Mail,
+  Download,
+  FileText
 } from 'lucide-react';
+import { toast } from 'sonner@2.0.3';
+import { generatePregnancySummaryPDF } from './utils/pdfGenerator';
 
 interface EnhancedProfilePageProps {
   onBack: () => void;
@@ -145,6 +149,38 @@ export function EnhancedProfilePage({ onBack, userName = "Brenda" }: EnhancedPro
         [field]: value
       }
     }));
+  };
+
+  const handleDownloadPregnancySummary = async () => {
+    try {
+      // Mock milestones based on current week
+      const milestones = [];
+      for (let week = 4; week <= profile.currentWeek; week += 4) {
+        milestones.push({
+          week,
+          description: `Week ${week} milestone completed`
+        });
+      }
+
+      // Mock appointments
+      const appointments = [
+        { date: 'Oct 20, 2025', title: 'Prenatal Checkup' },
+        { date: 'Nov 15, 2025', title: 'Ultrasound Scan' },
+        { date: 'Dec 10, 2025', title: 'Blood Tests' }
+      ];
+
+      await generatePregnancySummaryPDF({
+        userName: profile.name,
+        currentWeek: profile.currentWeek,
+        dueDate: profile.dueDate,
+        milestones,
+        appointments
+      });
+
+      toast.success('Pregnancy summary downloaded! Open the file and print as PDF.');
+    } catch (error) {
+      toast.error('Failed to download pregnancy summary');
+    }
   };
 
   const sections = [
@@ -486,6 +522,30 @@ export function EnhancedProfilePage({ onBack, userName = "Brenda" }: EnhancedPro
                   ) : (
                     <p className="text-foreground">{profile.emergencyContact.phone}</p>
                   )}
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Download Pregnancy Summary */}
+            <Card className="border-border bg-gradient-to-br from-primary/10 to-purple-500/10">
+              <CardContent className="p-6">
+                <div className="flex items-start space-x-4">
+                  <div className="p-3 bg-primary/20 rounded-full">
+                    <FileText className="w-6 h-6 text-primary" />
+                  </div>
+                  <div className="flex-1">
+                    <h4 className="text-foreground mb-1">Pregnancy Summary Report</h4>
+                    <p className="text-sm text-muted-foreground mb-4">
+                      Download a comprehensive summary of your pregnancy journey including milestones, appointments, and progress.
+                    </p>
+                    <Button 
+                      onClick={handleDownloadPregnancySummary}
+                      className="w-full bg-primary hover:bg-primary/90"
+                    >
+                      <Download className="w-4 h-4 mr-2" />
+                      Download Summary PDF
+                    </Button>
+                  </div>
                 </div>
               </CardContent>
             </Card>

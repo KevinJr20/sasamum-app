@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { motion } from 'motion/react';
+import { motion } from 'framer-motion';
 import { ArrowLeft, Package, MapPin, DollarSign, AlertTriangle, CheckCircle, Home, Ambulance, Heart, Baby, Clock } from 'lucide-react';
 import { Button } from './ui/button';
 import { Card } from './ui/card';

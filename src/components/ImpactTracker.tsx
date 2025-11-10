@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { motion } from 'motion/react';
+import { motion } from "framer-motion";
 import { ArrowLeft, TrendingUp, Heart, Award, Users, Calendar, CheckCircle, Star } from 'lucide-react';
 import { Button } from './ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';

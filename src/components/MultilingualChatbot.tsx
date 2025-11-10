@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { motion, AnimatePresence } from 'motion/react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowLeft, Send, Bot, User, Languages, Volume2, Mic } from 'lucide-react';
 import { Button } from './ui/button';
 import { Card, CardContent } from './ui/card';

@@ -1,13 +1,18 @@
 import React, { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "motion/react";
+import { motion, AnimatePresence } from "framer-motion";
 import { ThemeProvider } from "./components/ThemeProvider";
 import { LanguageProvider } from "./components/LanguageProvider";
 import { Toaster } from "./components/ui/sonner";
+import { FloatingElements } from "./components/FloatingElements";
 import { SasaMumLogo } from "./components/SasaMum-Logo";
+import type { UserData as OnboardUserData } from "./components/UserOnboarding";
+import type { ProviderData as ProviderOnboardData } from "./components/ProviderOnboarding";
 import { WelcomeCarousel } from "./components/WelcomeCarousel";
 import { AuthForms } from "./components/AuthForms";
+import { PasswordReset } from "./components/PasswordReset";
+import { UserOnboarding } from "./components/UserOnboarding";
+import { ProviderOnboarding } from "./components/ProviderOnboarding";
 import { Dashboard } from "./components/Dashboard";
-import { CalendarPage } from "./components/CalendarPage";
 import { DetailedCalendarPage } from "./components/DetailedCalendarPage";
 import { HospitalsMap } from "./components/HospitalsMap";
 import { ChatList } from "./components/ChatList";
@@ -22,22 +27,10 @@ import { MentalHealthCheck } from "./components/MentalHealthCheck";
 import { ArticlesVideosPage } from "./components/ArticlesVideosPage";
 import { SettingsPage } from "./components/SettingsPage";
 import { PregnancyBuddySystem } from "./components/PregnancyBuddySystem";
-import { BottomNavigation } from "./components/BottomNavigation";
 import { ContractionMonitor } from "./components/ContractionMonitor";
 import { EmergencyTransport } from "./components/EmergencyTransport";
 import { ChildcareServices } from "./components/ChildcareServices";
-import { SasaMumAI } from "./components/SasaMumAI";
-import { EnhancedHealthcareProviderPortal } from "./components/EnhancedHealthcareProviderPortal";
-import { FloatingElements } from "./components/FloatingElements";
-import { PasswordReset } from "./components/PasswordReset";
-import {
-  UserOnboarding,
-  UserData,
-} from "./components/UserOnboarding";
-import {
-  ProviderOnboarding,
-  ProviderData,
-} from "./components/ProviderOnboarding";
+import { RevampedProviderPortal } from "./components/RevampedProviderPortal";
 import { MedicationReminders } from "./components/MedicationReminders";
 import { PregnancyComplicationsSupport } from "./components/PregnancyComplicationsSupport";
 import { VitalsTracking } from "./components/VitalsTracking";
@@ -52,9 +45,12 @@ import { DigitalServices } from "./components/DigitalServices";
 import { EnhancedDeliveryPlanning } from "./components/EnhancedDeliveryPlanning";
 import { WearablesIntegration } from "./components/WearablesIntegration";
 import { ImpactTracker } from "./components/ImpactTracker";
-
+import { SasaMumAI } from "./components/SasaMumAI";
+import { BottomNavigation } from "./components/BottomNavigation";
 import { Button } from "./components/ui/button";
 import { Heart, Sparkles } from "lucide-react";
+
+// Use onboarding types from the onboarding components to keep shapes consistent
 
 type AppScreen =
   | "splash"
@@ -63,6 +59,7 @@ type AppScreen =
   | "password-reset"
   | "onboarding"
   | "provider-onboarding"
+  | "provider-auth"
   | "dashboard"
   | "calendar"
   | "hospitals"
@@ -155,7 +152,7 @@ export default function App() {
     }
   };
 
-  const handleOnboardingComplete = (data: UserData) => {
+  const handleOnboardingComplete = (data: OnboardUserData) => {
     // Save user data
     localStorage.setItem("userData", JSON.stringify(data));
     localStorage.setItem("hasCompletedOnboarding", "true");
@@ -180,7 +177,7 @@ export default function App() {
   };
 
   const handleProviderOnboardingComplete = (
-    data: ProviderData,
+    data: ProviderOnboardData,
   ) => {
     localStorage.setItem("providerData", JSON.stringify(data));
     localStorage.setItem(
@@ -650,12 +647,9 @@ export default function App() {
               )}
 
               {currentScreen === "provider-portal" && (
-                <EnhancedHealthcareProviderPortal
+                <RevampedProviderPortal
                   key="provider-portal"
-                  onBack={handleBackToDashboard}
-                  onNavigateToCHWPortal={() =>
-                    setCurrentScreen("chw-portal")
-                  }
+                  onBack={handleSignOut}
                 />
               )}
 

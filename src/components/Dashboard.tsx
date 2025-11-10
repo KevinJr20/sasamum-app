@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { motion } from 'motion/react';
+import { motion } from 'framer-motion';
 import { Card, CardContent } from './ui/card';
 import { Button } from './ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
@@ -138,12 +138,14 @@ export function Dashboard({
   const weekData = getCurrentWeekData(userData.currentWeek);
   
   // Generate calendar data for current week
-  const generateWeekDays = () => {
+  type WeekDay = { day: string; date: number; fullDate: Date; isToday: boolean };
+
+  const generateWeekDays = (): WeekDay[] => {
     const today = new Date();
     const currentDay = today.getDay(); // 0 = Sunday, 1 = Monday, etc.
     const mondayOffset = currentDay === 0 ? -6 : 1 - currentDay;
     
-    const weekDays = [];
+    const weekDays: WeekDay[] = [];
     for (let i = 0; i < 7; i++) {
       const date = new Date(today);
       date.setDate(today.getDate() + mondayOffset + i);

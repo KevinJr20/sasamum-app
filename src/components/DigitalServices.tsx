@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { motion } from 'motion/react';
+import { motion } from "framer-motion";
 import { ArrowLeft, FileText, Shield, Download, CheckCircle, Upload, AlertCircle, CreditCard, Eye, Edit2, Trash2, Plus, File } from 'lucide-react';
 import { Button } from './ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';

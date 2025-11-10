@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
-import { motion } from 'motion/react';
+import { motion } from 'framer-motion';
 import { Card, CardContent, CardHeader } from './ui/card';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
 import { Label } from './ui/label';
 import { Badge } from './ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs';
+import { toast } from 'sonner@2.0.3';
 import {
   LineChart,
   Line,
@@ -172,7 +173,25 @@ export function Partograph({
     fhr: entry.fetalHeartRate
   }));
 
-  const exportPDF = () => {
+  const exportPDF = async () => {
+    // Use the new PDF generator
+    const { generatePartographPDF } = await import('./utils/pdfGenerator');
+    
+    try {
+      await generatePartographPDF({
+        patientName,
+        admissionTime,
+        gravida,
+        parity,
+        entries
+      });
+      toast.success('Partograph downloaded successfully! Open the file and print as PDF.');
+    } catch (error) {
+      toast.error('Failed to generate partograph');
+    }
+  };
+
+  const exportPDFOld = () => {
     const printWindow = window.open('', '_blank');
     if (printWindow) {
       printWindow.document.write(`

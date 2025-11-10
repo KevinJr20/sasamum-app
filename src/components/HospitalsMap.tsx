@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { motion } from 'motion/react';
+import { motion } from 'framer-motion';
 import { useScrollToTop } from './utils/useScrollToTop';
 import { HeaderMenu } from './HeaderMenu';
 import { Card, CardContent } from './ui/card';

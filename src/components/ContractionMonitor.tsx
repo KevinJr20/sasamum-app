@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { motion, AnimatePresence } from 'motion/react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Card, CardContent, CardHeader } from './ui/card';
 import { Button } from './ui/button';
 import { Badge } from './ui/badge';
@@ -8,6 +8,7 @@ import { Slider } from './ui/slider';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from './ui/dialog';
 import { copyWithFeedback } from './utils/clipboard';
 import { Partograph } from './Partograph';
+import { toast } from 'sonner@2.0.3';
 import { 
   ArrowLeft,
   Play,
@@ -300,7 +301,23 @@ export function ContractionMonitor({ onBack, userName = "Grace" }: ContractionMo
     setShowExportDialog(false);
   };
 
-  const exportToPDF = () => {
+  const exportToPDF = async () => {
+    // Use the new PDF generator
+    const { generateContractionMonitorPDF } = await import('./utils/pdfGenerator');
+    
+    try {
+      await generateContractionMonitorPDF({
+        contractions,
+        userName
+      });
+      toast.success('Contraction report downloaded successfully! Open the file and print as PDF.');
+      setShowExportDialog(false);
+    } catch (error) {
+      toast.error('Failed to generate contraction report');
+    }
+  };
+
+  const exportToPDFOld = () => {
     // Create a simple text-based PDF report
     const reportText = generateReportText();
     

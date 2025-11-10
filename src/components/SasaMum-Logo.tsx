@@ -3,6 +3,7 @@ import React from 'react';
 interface LogoProps {
   className?: string;
   size?: 'sm' | 'md' | 'lg' | 'xl';
+  showText?: boolean;
 }
 
 export function SasaMumLogo({ className = '', size = 'md' }: LogoProps) {
@@ -59,7 +60,7 @@ export function SasaMumLogo({ className = '', size = 'md' }: LogoProps) {
         }}>
           SasaMum
         </span>
-        {(size === 'lg' || size === 'xl') && (
+        {showText && (size === 'lg' || size === 'xl') && (
           <span className="text-sm text-muted-foreground leading-none mt-1">
             Your pregnancy journey
           </span>

@@ -1,5 +1,5 @@
 import React from 'react';
-import { motion, AnimatePresence } from 'motion/react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Card, CardContent, CardHeader } from './ui/card';
 import { Button } from './ui/button';
 import { Badge } from './ui/badge';
