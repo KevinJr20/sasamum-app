@@ -1,0 +1,75 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  frontend:
+    name: Frontend
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+      - name: Install frontend deps
+        run: npm ci
+      - name: Run frontend type-check
+        run: npx tsc --noEmit
+      - name: Build frontend
+        run: npm run build
+      - name: Run frontend tests
+        run: npm test
+
+  backend:
+    name: Backend
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_DB: sasamum_test
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    steps:
+      - uses: actions/checkout@v4
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+      - name: Install backend deps
+        run: |
+          cd backend
+          npm ci
+      - name: Build backend (TypeScript)
+        run: |
+          cd backend
+          npm run build
+      - name: Setup database and migrations
+        env:
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/sasamum_test
+        run: |
+          cd backend
+          npx prisma db push --skip-generate
+      - name: Run backend linting
+        run: |
+          cd backend
+          npm run lint --silent
+      - name: Run backend tests
+        env:
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/sasamum_test
+        run: |
+          cd backend
+          npm test
+

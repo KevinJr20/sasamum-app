@@ -64,13 +64,13 @@ export function CalendarPage({ onBack, userName = "Brenda" }: CalendarPageProps)
   ];
 
   // Generate calendar days
-  const generateCalendarDays = () => {
+  const generateCalendarDays = (): (Date | null)[] => {
     const firstDay = new Date(currentYear, currentMonth, 1);
     const lastDay = new Date(currentYear, currentMonth + 1, 0);
     const startingDayOfWeek = firstDay.getDay();
     const daysInMonth = lastDay.getDate();
     
-    const days = [];
+    const days: (Date | null)[] = [];
     
     // Add empty cells for days before the first day of the month
     for (let i = 0; i < startingDayOfWeek; i++) {

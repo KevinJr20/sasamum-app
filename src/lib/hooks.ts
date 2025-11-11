@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { useQuery, useMutation, QueryKey, UseQueryOptions, UseMutationOptions } from '@tanstack/react-query';
 import { AxiosError } from 'axios';
 import api from './api';

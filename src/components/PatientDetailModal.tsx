@@ -24,7 +24,7 @@ interface Patient {
   dueDate: string;
   riskLevel: 'low' | 'medium' | 'high';
   lastVisit: string;
-  nextAppointment: string;
+  nextAppointment?: string;
   recentConcerns: string[];
   location: string;
   phone: string;
@@ -161,7 +161,9 @@ export function PatientDetailModal({ patient, isOpen, onClose }: PatientDetailMo
                       <Card className="bg-green-50 dark:bg-green-950/20 border-green-200 dark:border-green-900">
                         <CardContent className="p-3">
                           <p className="text-xs text-muted-foreground mb-1">Next Appointment</p>
-                          <p className="text-sm text-foreground">{new Date(patient.nextAppointment).toLocaleDateString()}</p>
+                          <p className="text-sm text-foreground">
+                            {patient.nextAppointment ? new Date(patient.nextAppointment).toLocaleDateString() : 'Not scheduled'}
+                          </p>
                         </CardContent>
                       </Card>
                     </div>

@@ -107,8 +107,29 @@ export default function App() {
     // Auto-advance from splash to welcome after 10 seconds
     if (currentScreen === "splash") {
       const timer = setTimeout(() => {
-        setCurrentScreen("welcome");
-      }, 10000);
+        // If there's an existing session token, skip straight into the app
+        const token = localStorage.getItem("sasa_token");
+        if (token) {
+          const userType = localStorage.getItem("userType");
+          const hasCompletedOnboarding = localStorage.getItem(
+            "hasCompletedOnboarding",
+          );
+          const hasCompletedProviderOnboarding = localStorage.getItem(
+            "hasCompletedProviderOnboarding",
+          );
+
+          if (userType === "provider") {
+            if (hasCompletedProviderOnboarding) setCurrentScreen("provider-portal");
+            else setCurrentScreen("provider-onboarding");
+          } else if (hasCompletedOnboarding) {
+            setCurrentScreen("dashboard");
+          } else {
+            setCurrentScreen("onboarding");
+          }
+        } else {
+          setCurrentScreen("welcome");
+        }
+      }, 6000);
       return () => clearTimeout(timer);
     }
   }, [currentScreen]);

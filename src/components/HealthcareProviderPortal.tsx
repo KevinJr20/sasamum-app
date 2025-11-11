@@ -49,6 +49,10 @@ interface Patient {
   location: string;
   phone: string;
   emergencyContact: string;
+  bloodPressure?: string;
+  weight?: string;
+  hemoglobin?: string;
+  notes?: string;
 }
 
 interface Appointment {

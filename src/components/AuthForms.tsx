@@ -8,6 +8,7 @@ import { SasaMumLogo } from "./SasaMum-Logo";
 import api from "../lib/api";
 import { useAuth } from "../contexts/AuthContext";
 import AuthDebug from "./AuthDebug";
+import { toast } from 'sonner';
 import {
   Eye,
   EyeOff,
@@ -35,6 +36,10 @@ export function AuthForms({
   const [isLogin, setIsLogin] = useState(true);
   const [isProviderMode, setIsProviderMode] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [awaitingVerification, setAwaitingVerification] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [verificationSent, setVerificationSent] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -46,13 +51,43 @@ export function AuthForms({
 
   const handleInputChange = (field: string, value: string) => {
     setFormData((prev: any) => ({ ...prev, [field]: value }));
+    setErrors((prev) => ({ ...prev, [field]: "" }));
+  };
+
+  const validate = () => {
+    const e: Record<string, string> = {};
+    const emailRe = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRe.test(formData.email || "")) e.email = "Enter a valid email address";
+    if (!isLogin) {
+      if (!formData.name || formData.name.trim().length < 2) e.name = "Please enter your name";
+      if (!formData.password || formData.password.length < 6) e.password = "Password must be at least 6 characters";
+      if (isProviderMode) {
+        if (!formData.facilityName || formData.facilityName.trim().length < 2) e.facilityName = "Enter facility or clinic name";
+        if (!formData.licenseNumber || formData.licenseNumber.trim().length < 2) e.licenseNumber = "Enter a valid license number";
+      } else {
+        if (!formData.dueDate) e.dueDate = "Please provide expected due date";
+      }
+    } else {
+      if (!formData.password || formData.password.length < 6) e.password = "Password must be at least 6 characters";
+      if (!formData.email) e.email = "Please enter your email";
+    }
+    setErrors(e);
+    return Object.keys(e).length === 0;
   };
 
   const handleSubmit = (e: any) => {
     e.preventDefault();
+    if (!validate()) {
+      const firstError = Object.values(errors)[0];
+      if (firstError) {
+        toast.error(firstError);
+      }
+      return;
+    }
+    setIsSubmitting(true);
     // If login mode, call backend
     if (isLogin) {
-      api.post('/auth/login', { email: formData.email, password: formData.password })
+      api.post('/api/auth/login', { email: formData.email, password: formData.password, role: isProviderMode ? 'provider' : 'mother' })
         .then((resp) => {
           const data = resp.data || {};
           const token = data.token;
@@ -72,33 +107,100 @@ export function AuthForms({
         })
         .catch((err) => {
           console.error('Login failed', err);
+          const status = err?.response?.status;
+          const errCode = err?.response?.data?.error;
+          // If server says email not verified, show verification UI
+          if (status === 403 || errCode === 'email_not_verified') {
+            toast.info('Please verify your email first');
+            setAwaitingVerification(true);
+            setIsSubmitting(false);
+            return;
+          }
+          toast.error('Invalid email or password');
           // Fallback to simulated success if backend unreachable
           setTimeout(() => {
             try { localStorage.setItem('userType', isProviderMode ? 'provider' : 'mother'); } catch (e) {}
             if (isProviderMode && onProviderLogin) onProviderLogin();
             else onLoginSuccess();
+            setIsSubmitting(false);
           }, 700);
         });
       return;
     }
+    // Registration / signup - attempt backend register, fall back to simulated local flow
+    const payload: any = {
+      name: formData.name,
+      email: formData.email,
+      password: formData.password,
+      role: isProviderMode ? 'provider' : 'mother',
+    };
 
-    // Registration / signup (still simulated for now)
-    setTimeout(() => {
-      if (isProviderMode && onProviderLogin) {
-        // Store provider status in localStorage
-        localStorage.setItem('userType', 'provider');
-        localStorage.setItem('providerData', JSON.stringify({
-          name: formData.name,
-          email: formData.email,
-          facilityName: formData.facilityName,
-          licenseNumber: formData.licenseNumber
-        }));
-        onProviderLogin();
-      } else {
-        localStorage.setItem('userType', 'mother');
-        onLoginSuccess();
-      }
-    }, 1000);
+    if (!isProviderMode) {
+      payload.dueDate = formData.dueDate || undefined;
+    } else {
+      payload.facilityName = formData.facilityName || undefined;
+      payload.licenseNumber = formData.licenseNumber || undefined;
+    }
+
+    api.post('/api/auth/register', payload)
+      .then((resp) => {
+        const data = resp.data || {};
+        const token = data.token;
+        const refresh = data.refreshToken || data.refresh;
+        const user = data.user || null;
+
+        if (token) {
+          try { localStorage.setItem('userType', isProviderMode ? 'provider' : 'mother'); } catch (e) {}
+          try { localStorage.setItem('sasa_refresh', refresh || ''); } catch (e) {}
+          auth.login(token, user, refresh);
+        }
+        // After successful registration, require email verification before navigating
+        toast.success('Registration successful! Check your email to verify.');
+        setAwaitingVerification(true);
+        setIsSubmitting(false);
+        setVerificationSent(true);
+      })
+      .catch((err) => {
+        console.warn('Register API not available or failed, falling back to local simulation', err?.message || err);
+        toast.info('Simulating registration flow locally...');
+        setTimeout(() => {
+          if (isProviderMode && onProviderLogin) {
+            // Store provider status in localStorage
+            localStorage.setItem('userType', 'provider');
+            localStorage.setItem('providerData', JSON.stringify({
+              name: formData.name,
+              email: formData.email,
+              facilityName: formData.facilityName,
+              licenseNumber: formData.licenseNumber,
+            }));
+            // Wait for verification simulation
+            setAwaitingVerification(true);
+            setIsSubmitting(false);
+            setVerificationSent(true);
+          } else {
+            localStorage.setItem('userType', 'mother');
+            setAwaitingVerification(true);
+            setIsSubmitting(false);
+            setVerificationSent(true);
+          }
+        }, 800);
+      });
+  };
+
+  const confirmEmailVerified = () => {
+    setAwaitingVerification(false);
+    if (isProviderMode && onProviderLogin) onProviderLogin();
+    else onLoginSuccess();
+  };
+
+  const resendVerification = () => {
+    api.post('/api/auth/resend', { email: formData.email })
+      .then(() => {
+        toast.success('Verification email resent — check your inbox.');
+      })
+      .catch(() => {
+        toast.error('Failed to resend. Please try again later.');
+      });
   };
 
   const handleGoogleLogin = () => {
@@ -107,10 +209,12 @@ export function AuthForms({
     window.open('https://accounts.google.com/signin', '_blank', 'width=500,height=600');
     // Simulate success after OAuth
     setTimeout(() => {
-      if (isProviderMode) {
-        onProviderLogin?.();
+      if (isLogin) {
+        if (isProviderMode) onProviderLogin?.();
+        else onLoginSuccess();
       } else {
-        onLoginSuccess();
+        // registration via social - assume provider verified by OAuth
+        setAwaitingVerification(true);
       }
     }, 2000);
   };
@@ -121,10 +225,11 @@ export function AuthForms({
     window.open('https://www.facebook.com/login', '_blank', 'width=500,height=600');
     // Simulate success after OAuth
     setTimeout(() => {
-      if (isProviderMode) {
-        onProviderLogin?.();
+      if (isLogin) {
+        if (isProviderMode) onProviderLogin?.();
+        else onLoginSuccess();
       } else {
-        onLoginSuccess();
+        setAwaitingVerification(true);
       }
     }, 2000);
   };
@@ -135,10 +240,11 @@ export function AuthForms({
     window.open('https://twitter.com/i/flow/login', '_blank', 'width=500,height=600');
     // Simulate success after OAuth
     setTimeout(() => {
-      if (isProviderMode) {
-        onProviderLogin?.();
+      if (isLogin) {
+        if (isProviderMode) onProviderLogin?.();
+        else onLoginSuccess();
       } else {
-        onLoginSuccess();
+        setAwaitingVerification(true);
       }
     }, 2000);
   };
@@ -182,20 +288,39 @@ export function AuthForms({
                   : (isLogin ? "Continue your beautiful journey with us" : "Begin your pregnancy journey with love and support")}
               </p>
               
-              {/* Provider Toggle */}
-              <div className="pt-3">
+              {/* Role selector - make it explicit and obvious */}
+              <div className="pt-3 flex justify-center gap-3">
                 <button
                   type="button"
-                  onClick={() => setIsProviderMode(!isProviderMode)}
-                  className="text-sm text-primary hover:underline"
+                  onClick={() => setIsProviderMode(false)}
+                  className={`px-3 py-1 rounded-full text-sm ${!isProviderMode ? "bg-primary text-primary-foreground" : "bg-card/60 text-muted-foreground"}`}
+                  aria-pressed={!isProviderMode}
                 >
-                  {isProviderMode ? "Sign in as a mother" : "I'm a healthcare provider"}
+                  Mama
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setIsProviderMode(true)}
+                  className={`px-3 py-1 rounded-full text-sm ${isProviderMode ? "bg-primary text-primary-foreground" : "bg-card/60 text-muted-foreground"}`}
+                  aria-pressed={isProviderMode}
+                >
+                  Healthcare provider
                 </button>
               </div>
             </motion.div>
           </CardHeader>
 
           <CardContent className="space-y-6">
+            {awaitingVerification ? (
+              <div className="space-y-4 text-center p-6">
+                <h3 className="text-lg font-medium">Almost there — confirm your email</h3>
+                <p className="text-sm text-muted-foreground">We've sent a confirmation link to <strong>{formData.email}</strong>. Please check your inbox and click the link to verify your account.</p>
+                <div className="flex gap-3 justify-center pt-4">
+                  <Button onClick={confirmEmailVerified} className="bg-primary">I've verified</Button>
+                  <Button variant="outline" onClick={resendVerification}>Resend</Button>
+                </div>
+              </div>
+            ) : (
             <form onSubmit={handleSubmit} className="space-y-4">
               {!isLogin && (
                 <motion.div
@@ -227,6 +352,7 @@ export function AuthForms({
                         className="pl-10 bg-input-background border-border/50 focus:border-primary"
                       />
                     </div>
+                    {errors.name && <p className="text-xs text-destructive mt-1">{errors.name}</p>}
                   </div>
 
                   {isProviderMode && (
@@ -248,6 +374,7 @@ export function AuthForms({
                             className="pl-10 bg-input-background border-border/50 focus:border-primary"
                           />
                         </div>
+                          {errors.facilityName && <p className="text-xs text-destructive mt-1">{errors.facilityName}</p>}
                       </div>
 
                       <div className="space-y-2">
@@ -267,6 +394,7 @@ export function AuthForms({
                             className="pl-10 bg-input-background border-border/50 focus:border-primary"
                           />
                         </div>
+                          {errors.licenseNumber && <p className="text-xs text-destructive mt-1">{errors.licenseNumber}</p>}
                       </div>
                     </>
                   )}
@@ -285,7 +413,7 @@ export function AuthForms({
                   <Input
                     id="email"
                     type="email"
-                    placeholder="mama@example.com"
+                    placeholder={isProviderMode ? "doctor@clinic.org" : "mama@example.com"}
                     value={formData.email}
                     onChange={(e) =>
                       handleInputChange("email", e.target.value)
@@ -293,6 +421,7 @@ export function AuthForms({
                     className="pl-10 bg-input-background border-border/50 focus:border-primary"
                   />
                 </div>
+                {errors.email && <p className="text-xs text-destructive mt-1">{errors.email}</p>}
               </div>
 
               <div className="space-y-2">
@@ -331,9 +460,10 @@ export function AuthForms({
                     )}
                   </button>
                 </div>
+                {errors.password && <p className="text-xs text-destructive mt-1">{errors.password}</p>}
               </div>
 
-              {!isLogin && (
+              {!isLogin && !isProviderMode && (
                 <motion.div
                   initial={{ opacity: 0, height: 0 }}
                   animate={{ opacity: 1, height: "auto" }}
@@ -361,19 +491,26 @@ export function AuthForms({
                       className="pl-10 bg-input-background border-border/50 focus:border-primary"
                     />
                   </div>
+                  {errors.dueDate && <p className="text-xs text-destructive mt-1">{errors.dueDate}</p>}
                 </motion.div>
               )}
 
               <Button
                 type="submit"
+                disabled={isSubmitting}
                 className="w-full bg-primary hover:bg-primary/90 text-primary-foreground py-6"
                 size="lg"
               >
-                {isProviderMode 
-                  ? (isLogin ? "Access Provider Portal" : "Register as Provider")
-                  : (isLogin ? "Welcome Home, Mama" : "Begin My Journey")}
+                {isSubmitting ? "..." : (
+                  <>
+                    {isProviderMode 
+                      ? (isLogin ? "Access Provider Portal" : "Register as Provider")
+                      : (isLogin ? "Welcome Home, Mama" : "Begin My Journey")}
+                  </>
+                )}
               </Button>
             </form>
+            )}
 
             {isLogin && (
               <div className="text-center">

@@ -5,7 +5,7 @@ import { Button } from './ui/button';
 import { Card } from './ui/card';
 import { Badge } from './ui/badge';
 import { ChevronLeft, ChevronRight, Calendar, Heart, Baby, X, BookOpen, Sparkles, Info } from 'lucide-react';
-import { toast } from 'sonner@2.0.3';
+import { toast } from 'sonner';
 
 interface PregnancyStageVisualizationProps {
   isOpen: boolean;
@@ -178,13 +178,13 @@ export function PregnancyStageVisualization({ isOpen, onClose, currentWeek }: Pr
   const strokeDashoffset = circumference - (progressPercentage / 100) * circumference;
 
   // Generate calendar for current month
-  const generateCalendarDays = () => {
+  const generateCalendarDays = (): (number | null)[] => {
     const firstDay = new Date(currentYear, currentMonth, 1);
     const lastDay = new Date(currentYear, currentMonth + 1, 0);
     const startingDayOfWeek = (firstDay.getDay() + 6) % 7; // Make Monday = 0
     const daysInMonth = lastDay.getDate();
     
-    const days = [];
+    const days: (number | null)[] = [];
     
     // Add empty cells for days before month starts
     for (let i = 0; i < startingDayOfWeek; i++) {

@@ -6,7 +6,7 @@ interface LogoProps {
   showText?: boolean;
 }
 
-export function SasaMumLogo({ className = '', size = 'md' }: LogoProps) {
+export function SasaMumLogo({ className = '', size = 'md', showText = true }: LogoProps) {
   const sizeClasses = {
     sm: 'w-8 h-8',
     md: 'w-12 h-12',

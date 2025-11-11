@@ -12,6 +12,12 @@ model User {
   email     String   @unique
   name      String?
   password  String
+  role      String   @default("mother")
+  facilityName String?
+  licenseNumber String?
+  dueDate   DateTime?
+  isVerified Boolean  @default(false)
+  verificationToken String?
   createdAt DateTime @default(now())
 }
 

@@ -68,10 +68,15 @@
       },
       "scripts": {
             "dev": "vite",
+            "dev:backend": "cd backend && npm run dev",
+            "start:backend": "cd backend && npm run start",
             "build": "vite build",
             "test": "vitest",
             "test:watch": "vitest watch",
             "test:ui": "vitest --ui",
-            "test:coverage": "vitest run --coverage"
+            "test:coverage": "vitest run --coverage",
+            "test:backend": "cd backend && npm test",
+            "lint:backend": "cd backend && npm run lint",
+            "format:backend": "cd backend && npm run format"
       }
 }

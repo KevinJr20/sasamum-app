@@ -13,7 +13,7 @@ interface WelcomeSlide {
 const slides: WelcomeSlide[] = [
   {
     image: "https://images.unsplash.com/photo-1661256545534-9770a8ea2146?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxhZnJpY2FuJTIwcHJlZ25hbnQlMjB3b21hbiUyMGJlYXV0aWZ1bHxlbnwxfHx8fDE3NTk3NDQzNjR8MA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral",
-    title: "Welcome, Beautiful Mama",
+    title: "Welcome, Mama",
     subtitle: "Your journey begins here",
     description: "Embrace every moment of your pregnancy with wisdom passed down through generations of strong African mothers."
   },

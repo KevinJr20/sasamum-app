@@ -10,7 +10,7 @@ import { Label } from './ui/label';
 import { Input } from './ui/input';
 import { Textarea } from './ui/textarea';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from './ui/dialog';
-import { toast } from 'sonner@2.0.3';
+import { toast } from 'sonner';
 import { generateBirthPlanPDF } from './utils/pdfGenerator';
 import { 
   ArrowLeft, MapPin, Hospital, AlertTriangle, CheckCircle, 
@@ -60,7 +60,7 @@ export function EnhancedDeliveryPlanning({ onBack }: EnhancedDeliveryPlanningPro
       { factor: 'Age over 35', impact: 'medium' as const },
       { factor: 'First pregnancy', impact: 'low' as const },
       { factor: 'Previous C-section', impact: 'medium' as const }
-    ],
+    ] as Array<{ factor: string; impact: 'high' | 'medium' | 'low' }>,
     recommendations: [
       'Facility with NICU Level 2 or higher required',
       'Specialist obstetrician consultation recommended',
@@ -267,19 +267,21 @@ export function EnhancedDeliveryPlanning({ onBack }: EnhancedDeliveryPlanningPro
 
               <div className="space-y-2">
                 <p className="text-sm">Identified Risk Factors:</p>
-                {riskProfile.factors.map((factor, index) => (
-                  <div key={index} className="flex items-center gap-2 text-sm">
-                    <div className={`w-2 h-2 rounded-full ${
-                      factor.impact === 'high' ? 'bg-red-500' :
-                      factor.impact === 'medium' ? 'bg-yellow-500' :
-                      'bg-green-500'
-                    }`} />
-                    <span>{factor.factor}</span>
-                    <Badge variant="outline" className="text-xs ml-auto">
-                      {factor.impact} impact
-                    </Badge>
-                  </div>
-                ))}
+                {riskProfile.factors.map((factor, index) => {
+                  const impactColor = 
+                    factor.impact === 'high' ? 'bg-red-500' :
+                    factor.impact === 'medium' ? 'bg-yellow-500' :
+                    'bg-green-500';
+                  return (
+                    <div key={index} className="flex items-center gap-2 text-sm">
+                      <div className={`w-2 h-2 rounded-full ${impactColor}`} />
+                      <span>{factor.factor}</span>
+                      <Badge variant="outline" className="text-xs ml-auto">
+                        {factor.impact} impact
+                      </Badge>
+                    </div>
+                  );
+                })}
               </div>
 
               <div className="pt-3 border-t space-y-2">

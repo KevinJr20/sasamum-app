@@ -8,7 +8,7 @@ import { Textarea } from './ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
 import { Badge } from './ui/badge';
 import { ScrollArea } from './ui/scroll-area';
-import { toast } from 'sonner@2.0.3';
+import { toast } from 'sonner';
 import {
   X, Save, Plus, Minus, Apple, Coffee, UtensilsCrossed, Droplet,
   AlertCircle, CheckCircle2, Lightbulb, Send
@@ -191,39 +191,35 @@ export function NutritionPlanCreator({ patient, onClose, onSave }: NutritionPlan
               <CardContent>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                   <div>
-                    <Label className="text-xs">Calories</Label>
+                    <Label className="text-xs">Calories (kcal)</Label>
                     <Input
                       value={nutritionPlan.calories}
                       onChange={(e) => setNutritionPlan({ ...nutritionPlan, calories: e.target.value })}
                       className="mt-1"
-                      suffix="kcal"
                     />
                   </div>
                   <div>
-                    <Label className="text-xs">Protein</Label>
+                    <Label className="text-xs">Protein (g)</Label>
                     <Input
                       value={nutritionPlan.protein}
                       onChange={(e) => setNutritionPlan({ ...nutritionPlan, protein: e.target.value })}
                       className="mt-1"
-                      suffix="g"
                     />
                   </div>
                   <div>
-                    <Label className="text-xs">Iron</Label>
+                    <Label className="text-xs">Iron (mg)</Label>
                     <Input
                       value={nutritionPlan.iron}
                       onChange={(e) => setNutritionPlan({ ...nutritionPlan, iron: e.target.value })}
                       className="mt-1"
-                      suffix="mg"
                     />
                   </div>
                   <div>
-                    <Label className="text-xs">Calcium</Label>
+                    <Label className="text-xs">Calcium (mg)</Label>
                     <Input
                       value={nutritionPlan.calcium}
                       onChange={(e) => setNutritionPlan({ ...nutritionPlan, calcium: e.target.value })}
                       className="mt-1"
-                      suffix="mg"
                     />
                   </div>
                 </div>

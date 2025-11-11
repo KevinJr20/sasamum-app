@@ -506,7 +506,11 @@ export const generateMedicalReportPDF = async (
     notes?: string;
   }
 ) => {
-  const sections = [];
+  interface PDFSection {
+    header: string;
+    content: string;
+  }
+  const sections: PDFSection[] = [];
   
   if (reportData.vitals) {
     sections.push({

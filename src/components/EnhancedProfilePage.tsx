@@ -154,7 +154,11 @@ export function EnhancedProfilePage({ onBack, userName = "Brenda" }: EnhancedPro
   const handleDownloadPregnancySummary = async () => {
     try {
       // Mock milestones based on current week
-      const milestones = [];
+      interface Milestone {
+        week: number;
+        description: string;
+      }
+      const milestones: Milestone[] = [];
       for (let week = 4; week <= profile.currentWeek; week += 4) {
         milestones.push({
           week,

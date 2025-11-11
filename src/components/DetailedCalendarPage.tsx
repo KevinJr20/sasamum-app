@@ -99,15 +99,17 @@ export function DetailedCalendarPage({ onBack, userName = "Brenda" }: DetailedCa
   const currentMonth = currentDate.getMonth();
   const currentYear = currentDate.getFullYear();
 
-  // Generate calendar days
-  const generateCalendarDays = () => {
+  // Generate calendar days (explicitly typed)
+  type DetailedDay = { date: Date | null; isCurrentMonth: boolean };
+
+  const generateCalendarDays = (): DetailedDay[] => {
     const firstDay = new Date(currentYear, currentMonth, 1);
     const lastDay = new Date(currentYear, currentMonth + 1, 0);
     const startingDayOfWeek = (firstDay.getDay() + 6) % 7; // Make Monday = 0
     const daysInMonth = lastDay.getDate();
-    
-    const days = [];
-    
+
+    const days: DetailedDay[] = [];
+
     // Add days from previous month
     const prevMonth = new Date(currentYear, currentMonth, 0);
     const prevMonthDays = prevMonth.getDate();
@@ -117,7 +119,7 @@ export function DetailedCalendarPage({ onBack, userName = "Brenda" }: DetailedCa
         isCurrentMonth: false
       });
     }
-    
+
     // Add days of current month
     for (let day = 1; day <= daysInMonth; day++) {
       days.push({
@@ -125,7 +127,7 @@ export function DetailedCalendarPage({ onBack, userName = "Brenda" }: DetailedCa
         isCurrentMonth: true
       });
     }
-    
+
     // Add days from next month to fill the grid
     const remainingDays = 42 - days.length; // 6 rows * 7 days
     for (let day = 1; day <= remainingDays; day++) {
@@ -134,7 +136,7 @@ export function DetailedCalendarPage({ onBack, userName = "Brenda" }: DetailedCa
         isCurrentMonth: false
       });
     }
-    
+
     return days;
   };
 
@@ -306,37 +308,18 @@ export function DetailedCalendarPage({ onBack, userName = "Brenda" }: DetailedCa
               {/* Calendar days */}
               <div className="grid grid-cols-7 gap-1">
                 {calendarDays.map((dayInfo, index) => {
-                  const { date, isCurrentMonth } = dayInfo;
-                  const isSelected = isSelectedDate(date);
-                  const hasNotes = getNotesForDate(date).length > 0;
-                  
+                  const d = dayInfo.date;
                   return (
-                    <button
-                      key={index}
-                      onClick={() => handleDateClick(date, isCurrentMonth)}
-                      className={`h-10 text-sm rounded-lg flex items-center justify-center relative transition-all duration-200 ${
-                        !isCurrentMonth
-                          ? 'text-muted-foreground/40'
-                          : isSelected
-                          ? 'bg-primary text-primary-foreground'
-                          : 'text-foreground hover:bg-accent'
-                      }`}
-                    >
-                      {date.getDate()}
-                      {hasNotes && (
-                        <div className="absolute bottom-1 left-1/2 -translate-x-1/2">
-                          <div className={`w-1 h-1 rounded-full ${isCurrentMonth ? 'bg-primary' : 'bg-muted-foreground/40'}`} />
-                        </div>
-                      )}
-                    </button>
+                    <div key={index} className="h-10 text-center">
+                      {d ? d.getDate() : ''}
+                    </div>
                   );
                 })}
               </div>
             </CardContent>
           </Card>
-        </motion.div>
-
-        {/* Notes Section */}
+  </motion.div>
+  {/* Notes Section */}
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
