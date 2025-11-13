@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useAuth } from '../contexts/AuthContext';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
@@ -77,10 +78,24 @@ export interface UserData {
 
 export function UserOnboarding({ onComplete, onSkip }: UserOnboardingProps) {
   const [currentStep, setCurrentStep] = useState(1);
+  const auth = useAuth();
+
+  // Prefill fullName from authenticated user or any stored onboarding data
+  const storedUser = (() => {
+    try { return JSON.parse(localStorage.getItem('user') || 'null'); } catch (e) { return null; }
+  })();
+  const storedUserData = (() => {
+    try { return JSON.parse(localStorage.getItem('userData') || 'null'); } catch (e) { return null; }
+  })();
+
+  const initialFullName = auth?.user?.name || storedUserData?.fullName || storedUser?.name || '';
+
+  const [allowEditPersonal, setAllowEditPersonal] = useState(false);
+  const hasPrefilledPersonal = Boolean(initialFullName);
   const totalSteps = 5;
   
   const [formData, setFormData] = useState<UserData>({
-    fullName: '',
+    fullName: initialFullName || '',
     phone: '',
     location: '',
     dateOfBirth: '',
@@ -150,8 +165,8 @@ export function UserOnboarding({ onComplete, onSkip }: UserOnboardingProps) {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-secondary/20 to-accent/30 p-4 flex flex-col">
-      {/* Header */}
-      <div className="pt-4 pb-6">
+  {/* Header */}
+  <div className="page-header pt-4 pb-6">
         <div className="max-w-md mx-auto space-y-4">
           <div className="flex items-center justify-between">
             <h2 className="text-xl text-foreground">Complete Your Profile</h2>
@@ -184,7 +199,7 @@ export function UserOnboarding({ onComplete, onSkip }: UserOnboardingProps) {
               exit={{ opacity: 0, x: -50 }}
               transition={{ duration: 0.3 }}
             >
-              <Card className="bg-card/95 backdrop-blur-sm border-border/50 shadow-xl">
+              <Card className="bg-card/95 backdrop-blur-sm border-border/50 shadow-sm">
                 <CardHeader className="text-center space-y-2">
                   <div className="mx-auto w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center">
                     <User className="w-8 h-8 text-primary" />
@@ -192,20 +207,31 @@ export function UserOnboarding({ onComplete, onSkip }: UserOnboardingProps) {
                   <h3 className="text-lg text-foreground">Personal Information</h3>
                   <p className="text-sm text-muted-foreground">Let's get to know you better, Mama</p>
                 </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="fullName">Full Name *</Label>
-                    <Input
-                      id="fullName"
-                      value={formData.fullName}
-                      onChange={(e) => updateField('fullName', e.target.value)}
-                      placeholder="Your beautiful name"
-                      className="bg-input-background"
-                    />
-                  </div>
+                <CardContent className="space-y-3 p-4">
+                  {hasPrefilledPersonal && !allowEditPersonal ? (
+                    <div className="space-y-2 text-center">
+                      <h3 className="text-lg font-medium">Welcome, {formData.fullName}</h3>
+                      <p className="text-sm text-muted-foreground">We'll use your registered name for the app. You can edit this if it's incorrect.</p>
+                      <div className="pt-4 flex justify-center">
+                        <Button variant="outline" onClick={() => setAllowEditPersonal(true)}>Edit Name</Button>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="space-y-2">
+                      <Label htmlFor="fullName">Full Name *</Label>
+                      <Input
+                        id="fullName"
+                        value={formData.fullName}
+                        onChange={(e) => updateField('fullName', e.target.value)}
+                        placeholder="Your beautiful name"
+                        className="bg-input-background"
+                      />
+                    </div>
+                  )}
                   
                   <div className="space-y-2">
                     <Label htmlFor="phone">Phone Number *</Label>
+                    <p className="text-xs text-muted-foreground">We'll use this for important account messages and emergency contact if needed.</p>
                     <Input
                       id="phone"
                       type="tel"
@@ -258,9 +284,10 @@ export function UserOnboarding({ onComplete, onSkip }: UserOnboardingProps) {
                   <h3 className="text-lg text-foreground">Pregnancy Details</h3>
                   <p className="text-sm text-muted-foreground">Help us support your journey</p>
                 </CardHeader>
-                <CardContent className="space-y-4">
+                <CardContent className="space-y-3 p-4">
                   <div className="space-y-2">
                     <Label htmlFor="dueDate">Expected Due Date *</Label>
+                    <p className="text-xs text-muted-foreground">This helps us show relevant guidance for your pregnancy week.</p>
                     <Input
                       id="dueDate"
                       type="date"

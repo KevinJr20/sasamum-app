@@ -46,5 +46,5 @@ export function useLanguage() {
 export const languages = [
   { code: 'en', name: 'English', nativeName: 'English' },
   { code: 'sw', name: 'Swahili', nativeName: 'Kiswahili' },
-  { code: 'fr', name: 'Francais', nativeName: 'Français' },
+  { code: 'fr', name: 'French', nativeName: 'Français' },
 ] as const;

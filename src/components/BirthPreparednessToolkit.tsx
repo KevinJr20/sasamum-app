@@ -18,7 +18,7 @@ interface BirthPreparednessToolkitProps {
 const HOSPITAL_BAG_ITEMS = {
   'For Mother': [
     { id: '1', item: 'National ID / Hospital Card', checked: false },
-    { id: '2', item: 'NHIF/Linda Mama Card', checked: false },
+    { id: '2', item: 'SHA/Linda Mama Card', checked: false },
     { id: '3', item: 'Antenatal records', checked: false },
     { id: '4', item: 'Comfortable nightdresses (2-3)', checked: false },
     { id: '5', item: 'Maternity pads (heavy flow)', checked: false },
@@ -93,28 +93,28 @@ export function BirthPreparednessToolkit({ onBack }: BirthPreparednessToolkitPro
       level: 'Level 6 (National)',
       services: ['C-Section', 'ICU', 'NICU', '24/7 Emergency'],
       distance: '3.2 km',
-      nhif: true,
+      sha: true,
     },
     {
       name: 'Pumwani Maternity Hospital',
       level: 'Level 5 (County)',
       services: ['Normal Delivery', 'C-Section', 'Special Care Baby Unit'],
       distance: '2.8 km',
-      nhif: true,
+      sha: true,
     },
     {
       name: 'Nairobi Women\'s Hospital',
       level: 'Private Hospital',
       services: ['Normal Delivery', 'C-Section', 'NICU', 'Private Rooms'],
       distance: '4.5 km',
-      nhif: true,
+      sha: true,
     },
   ];
 
   return (
     <div className="min-h-screen bg-background pb-20">
-      {/* Header */}
-      <div className="sticky-header">
+  {/* Header */}
+  <div className="page-header sticky-header">
         <div className="flex items-center gap-4 p-4">
           <Button variant="ghost" size="icon" onClick={onBack}>
             <ArrowLeft className="w-5 h-5" />
@@ -264,7 +264,7 @@ export function BirthPreparednessToolkit({ onBack }: BirthPreparednessToolkitPro
                     <h3 className="text-foreground mb-1">{facility.name}</h3>
                     <div className="flex items-center gap-2 mb-2">
                       <Badge variant="secondary">{facility.level}</Badge>
-                      {facility.nhif && <Badge variant="outline">NHIF/Linda Mama</Badge>}
+                      {facility.sha && <Badge variant="outline">SHA/Linda Mama</Badge>}
                     </div>
                     <div className="flex items-center gap-2 text-sm text-muted-foreground mb-2">
                       <MapPin className="w-3 h-3" />
@@ -301,7 +301,7 @@ export function BirthPreparednessToolkit({ onBack }: BirthPreparednessToolkitPro
                 </div>
                 <div className="flex items-start gap-2">
                   <CheckCircle className="w-4 h-4 text-primary mt-0.5" />
-                  <span>Confirm they accept NHIF/Linda Mama</span>
+                  <span>Confirm they accept SHA/Linda Mama</span>
                 </div>
                 <div className="flex items-start gap-2">
                   <CheckCircle className="w-4 h-4 text-primary mt-0.5" />
@@ -397,7 +397,7 @@ export function BirthPreparednessToolkit({ onBack }: BirthPreparednessToolkitPro
             </Card>
 
             <Card className="p-4">
-              <h3 className="text-foreground mb-4">Linda Mama / NHIF Benefits</h3>
+              <h3 className="text-foreground mb-4">Linda Mama / SHA Benefits</h3>
               <div className="space-y-3">
                 <div className="p-3 bg-muted/30 rounded-lg">
                   <h4 className="text-foreground mb-2">Linda Mama Programme</h4>
@@ -413,7 +413,7 @@ export function BirthPreparednessToolkit({ onBack }: BirthPreparednessToolkitPro
                 </div>
 
                 <div className="p-3 bg-muted/30 rounded-lg">
-                  <h4 className="text-foreground mb-2">NHIF Maternity Cover</h4>
+                  <h4 className="text-foreground mb-2">SHA Maternity Cover</h4>
                   <p className="text-sm text-muted-foreground mb-2">
                     Coverage at accredited facilities
                   </p>
@@ -459,7 +459,7 @@ export function BirthPreparednessToolkit({ onBack }: BirthPreparednessToolkitPro
               <h3 className="text-foreground mb-3">Cost-Saving Tips</h3>
               <div className="space-y-2 text-sm text-muted-foreground">
                 <p>💡 Register for Linda Mama at your local facility</p>
-                <p>💡 Ensure NHIF contributions are up to date</p>
+                <p>💡 Ensure SHA contributions are up to date</p>
                 <p>💡 Ask family/friends for support with baby items</p>
                 <p>💡 Buy essentials gradually during pregnancy</p>
                 <p>💡 Consider public hospitals for quality free care</p>

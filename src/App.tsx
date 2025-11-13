@@ -102,8 +102,18 @@ export default function App() {
   const [screenHistory, setScreenHistory] = useState<
     AppScreen[]
   >([]);
+  const scrollContainerRef = React.useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
+    // Whenever the screen changes, make sure the scroll container is at top.
+    try {
+      if (scrollContainerRef.current) {
+        scrollContainerRef.current.scrollTo({ top: 0, left: 0 });
+      } else {
+        window.scrollTo(0, 0);
+      }
+    } catch (e) {}
+
     // Auto-advance from splash to welcome after 10 seconds
     if (currentScreen === "splash") {
       const timer = setTimeout(() => {
@@ -403,7 +413,9 @@ export default function App() {
               <FloatingElements />
             )}
 
-            <AnimatePresence mode="wait">
+            {/* Make the app content scrollable while headers remain sticky. */}
+            <div ref={scrollContainerRef} className="page-with-header h-screen overflow-y-auto">
+              <AnimatePresence mode="wait">
               {currentScreen === "splash" && (
                 <SplashScreen key="splash" />
               )}
@@ -775,6 +787,7 @@ export default function App() {
                 />
               )}
             </AnimatePresence>
+          </div>
 
             {/* SasaMum AI FAB - Show on all screens except splash, welcome, auth, chat screens, and provider screens */}
             {![

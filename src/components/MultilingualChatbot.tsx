@@ -156,8 +156,8 @@ export function MultilingualChatbot({ onBack }: MultilingualChatbotProps) {
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
-      {/* Header */}
-      <div className="sticky-header">
+  {/* Header */}
+  <div className="page-header sticky-header">
         <div className="flex items-center gap-4 p-4">
           <Button variant="ghost" size="icon" onClick={onBack}>
             <ArrowLeft className="w-5 h-5" />

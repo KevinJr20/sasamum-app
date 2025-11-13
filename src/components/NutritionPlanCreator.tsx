@@ -164,8 +164,8 @@ export function NutritionPlanCreator({ patient, onClose, onSave }: NutritionPlan
         animate={{ opacity: 1, scale: 1 }}
         className="w-full max-w-4xl bg-card rounded-lg shadow-2xl max-h-[90vh] flex flex-col"
       >
-        {/* Header */}
-        <div className="p-6 border-b border-border flex items-center justify-between">
+  {/* Header */}
+  <div className="page-header p-6 border-b border-border flex items-center justify-between">
           <div>
             <h2 className="text-xl text-foreground">Create Nutrition Plan</h2>
             <p className="text-sm text-muted-foreground">

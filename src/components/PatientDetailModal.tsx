@@ -75,7 +75,7 @@ export function PatientDetailModal({ patient, isOpen, onClose }: PatientDetailMo
             <Card className="max-w-3xl mx-auto bg-card border-border shadow-2xl">
               <CardContent className="p-0">
                 {/* Header */}
-                <div className="sticky top-0 bg-card border-b border-border p-4 flex items-center justify-between z-10">
+                <div className="page-header sticky top-0 bg-card border-b border-border p-4 flex items-center justify-between z-10">
                   <div className="flex items-center space-x-3">
                     <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
                       <User className="w-6 h-6 text-primary" />

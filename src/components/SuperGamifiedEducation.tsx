@@ -338,8 +338,8 @@ export function SuperGamifiedEducation({ onBack }: SuperGamifiedEducationProps) 
       transition={{ duration: 0.6 }}
       className="min-h-screen bg-background pb-20"
     >
-      {/* Header */}
-      <div className="sticky top-0 z-40 bg-gradient-to-r from-pink-500/10 to-purple-500/10 backdrop-blur-md border-b border-border shadow-sm">
+  {/* Header */}
+  <div className="page-header sticky top-0 z-40 bg-gradient-to-r from-pink-500/10 to-purple-500/10 backdrop-blur-md border-b border-border shadow-sm">
         <div className="flex items-center justify-between p-4">
           <Button variant="ghost" size="sm" onClick={onBack} className="p-2">
             <ArrowLeft className="w-6 h-6" />

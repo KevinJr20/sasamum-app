@@ -258,7 +258,7 @@ export function ArticlesVideosPage({ onBack, userName = "Brenda" }: ArticlesVide
     >
       <div className="max-w-7xl mx-auto w-full">{/* Responsive wrapper */}
       {/* Sticky Header */}
-      <div className="sticky top-0 z-40 flex items-center justify-between p-4 bg-card/95 backdrop-blur-md border-b border-border shadow-sm">
+      <div className="page-header sticky top-0 z-40 flex items-center justify-between p-4 bg-card/95 backdrop-blur-md border-b border-border shadow-sm">
         <Button variant="ghost" size="sm" onClick={onBack} className="p-2">
           <ArrowLeft className="w-6 h-6 text-foreground" />
         </Button>

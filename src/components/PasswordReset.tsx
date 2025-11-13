@@ -30,7 +30,7 @@ export function PasswordReset({ onBack }: PasswordResetProps) {
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-secondary/20 to-accent/30 p-4 flex flex-col">
       {/* Header */}
-      <div className="flex items-center justify-between p-4">
+      <div className="page-header flex items-center justify-between p-4">
         <Button 
           variant="ghost" 
           size="sm" 

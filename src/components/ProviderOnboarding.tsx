@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useAuth } from '../contexts/AuthContext';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Card, CardContent } from './ui/card';
 import { Button } from './ui/button';
@@ -59,10 +60,40 @@ interface ProviderOnboardingProps {
 
 export function ProviderOnboarding({ onComplete, onSkip }: ProviderOnboardingProps) {
   const [currentStep, setCurrentStep] = useState(0);
+  const auth = useAuth();
+
+  // Try to prefill name/email from auth context or localStorage so onboarding
+  // doesn't ask for information already collected during registration.
+  const storedProvider = (() => {
+    try {
+      return JSON.parse(localStorage.getItem('providerData') || 'null');
+    } catch (e) {
+      return null;
+    }
+  })();
+
+  const storedUser = (() => {
+    try {
+      return JSON.parse(localStorage.getItem('user') || 'null');
+    } catch (e) {
+      return null;
+    }
+  })();
+
+  const initialFullName = auth?.user?.name || storedProvider?.name || storedUser?.name || '';
+  const initialEmail = auth?.user?.email || storedProvider?.email || storedUser?.email || '';
+
   const [data, setData] = useState<Partial<ProviderData>>({
     languages: [],
-    consultationTypes: []
+    consultationTypes: [],
+    fullName: initialFullName,
+    email: initialEmail,
   });
+
+  // If we already have name+email, we can skip asking for them again. Allow the
+  // user to toggle editing in case they want to change the values.
+  const [allowEditPersonal, setAllowEditPersonal] = useState(false);
+  const hasPrefilledPersonal = Boolean(initialFullName && initialEmail);
 
   const specialties = [
     'Obstetrician/Gynecologist',
@@ -130,14 +161,23 @@ export function ProviderOnboarding({ onComplete, onSkip }: ProviderOnboardingPro
 
   const validateStep = () => {
     if (currentStep === 0) {
-      if (!data.fullName || !data.email || !data.phone) {
-        toast.error('Please fill in all required fields');
-        return false;
-      }
-      // Basic email validation
-      if (!/\S+@\S+\.\S+/.test(data.email)) {
-        toast.error('Please enter a valid email address');
-        return false;
+      // If name and email were prefilled and the user didn't choose to edit them,
+      // we don't ask for them again — only require phone in that case.
+      if (hasPrefilledPersonal && !allowEditPersonal) {
+        if (!data.phone) {
+          toast.error('Please provide a phone number');
+          return false;
+        }
+      } else {
+        if (!data.fullName || !data.email || !data.phone) {
+          toast.error('Please fill in all required fields');
+          return false;
+        }
+        // Basic email validation
+        if (!/\S+@\S+\.\S+/.test(data.email)) {
+          toast.error('Please enter a valid email address');
+          return false;
+        }
       }
     }
     
@@ -182,8 +222,8 @@ export function ProviderOnboarding({ onComplete, onSkip }: ProviderOnboardingPro
       exit={{ opacity: 0 }}
       className="min-h-screen bg-background flex flex-col"
     >
-      {/* Header */}
-      <div className="bg-card/95 backdrop-blur-md border-b border-border p-4">
+  {/* Header */}
+  <div className="page-header bg-card/95 backdrop-blur-md border-b border-border p-4">
         <div className="flex items-center space-x-3 mb-4">
           <Stethoscope className="w-8 h-8 text-primary" />
           <div>
@@ -245,36 +285,49 @@ export function ProviderOnboarding({ onComplete, onSkip }: ProviderOnboardingPro
                 <p className="text-sm text-muted-foreground">{steps[0].description}</p>
               </div>
 
-              <Card className="border-border">
-                <CardContent className="p-6 space-y-4">
-                  <div>
-                    <Label>Full Name *</Label>
-                    <Input
-                      value={data.fullName || ''}
-                      onChange={(e) => updateData('fullName', e.target.value)}
-                      placeholder="Dr. Sarah Wanjiru"
-                    />
-                  </div>
+              <Card className="border-border shadow-sm">
+                <CardContent className="p-4 space-y-3">
+                  {hasPrefilledPersonal && !allowEditPersonal ? (
+                      <div className="space-y-2 text-center">
+                        <h3 className="text-lg font-medium">Welcome, {data.fullName}</h3>
+                        <p className="text-sm text-muted-foreground">We'll use <strong>{data.email}</strong> for appointment and verification messages.</p>
+                        <div className="flex justify-center gap-3 pt-3">
+                          <Button onClick={() => setAllowEditPersonal(true)} variant="outline">Edit</Button>
+                          <Button onClick={() => setCurrentStep(1)} className="bg-primary">Continue</Button>
+                        </div>
+                      </div>
+                  ) : (
+                    <div className="space-y-4">
+                      <div>
+                        <Label>Full Name *</Label>
+                        <Input
+                          value={data.fullName || ''}
+                          onChange={(e) => updateData('fullName', e.target.value)}
+                          placeholder="Dr. Sarah Wanjiru"
+                        />
+                      </div>
 
-                  <div>
-                    <Label>Email Address *</Label>
-                    <Input
-                      value={data.email || ''}
-                      onChange={(e) => updateData('email', e.target.value)}
-                      placeholder="doctor@hospital.co.ke"
-                      type="email"
-                    />
-                  </div>
+                      <div>
+                        <Label>Email Address *</Label>
+                        <Input
+                          value={data.email || ''}
+                          onChange={(e) => updateData('email', e.target.value)}
+                          placeholder="doctor@hospital.co.ke"
+                          type="email"
+                        />
+                      </div>
 
-                  <div>
-                    <Label>Phone Number *</Label>
-                    <Input
-                      value={data.phone || ''}
-                      onChange={(e) => updateData('phone', e.target.value)}
-                      placeholder="+254 712 345 678"
-                      type="tel"
-                    />
-                  </div>
+                      <div>
+                        <Label>Phone Number *</Label>
+                        <Input
+                          value={data.phone || ''}
+                          onChange={(e) => updateData('phone', e.target.value)}
+                          placeholder="+254 712 345 678"
+                          type="tel"
+                        />
+                      </div>
+                    </div>
+                  )}
                 </CardContent>
               </Card>
             </motion.div>
@@ -295,9 +348,10 @@ export function ProviderOnboarding({ onComplete, onSkip }: ProviderOnboardingPro
               </div>
 
               <Card className="border-border">
-                <CardContent className="p-6 space-y-4">
-                  <div>
-                    <Label>Specialty *</Label>
+                <CardContent className="p-4 space-y-3">
+                      <div>
+                        <Label>Specialty *</Label>
+                        <p className="text-xs text-muted-foreground">Select the primary field you practice in.</p>
                     <select
                       value={data.specialty || ''}
                       onChange={(e) => updateData('specialty', e.target.value)}
@@ -321,6 +375,7 @@ export function ProviderOnboarding({ onComplete, onSkip }: ProviderOnboardingPro
 
                   <div>
                     <Label>License Number *</Label>
+                    <p className="text-xs text-muted-foreground">We'll only display the number to admins; keep it accurate for verification.</p>
                     <Input
                       value={data.licenseNumber || ''}
                       onChange={(e) => updateData('licenseNumber', e.target.value)}
@@ -380,9 +435,10 @@ export function ProviderOnboarding({ onComplete, onSkip }: ProviderOnboardingPro
               </div>
 
               <Card className="border-border">
-                <CardContent className="p-6 space-y-4">
+                <CardContent className="p-4 space-y-3">
                   <div>
                     <Label>Facility Name *</Label>
+                    <p className="text-xs text-muted-foreground">Where you currently practice or provide services.</p>
                     <Input
                       value={data.facilityName || ''}
                       onChange={(e) => updateData('facilityName', e.target.value)}
@@ -452,9 +508,10 @@ export function ProviderOnboarding({ onComplete, onSkip }: ProviderOnboardingPro
               </div>
 
               <Card className="border-border">
-                <CardContent className="p-6 space-y-4">
+                <CardContent className="p-4 space-y-3">
                   <div>
                     <Label>Languages Spoken</Label>
+                    <p className="text-xs text-muted-foreground">Choose languages you are comfortable consulting in.</p>
                     <div className="grid grid-cols-2 gap-2 mt-2">
                       {languageOptions.map((lang) => (
                         <button

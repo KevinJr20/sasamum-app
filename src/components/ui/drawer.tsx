@@ -8,7 +8,26 @@ import { cn } from "./utils";
 function Drawer({
   ...props
 }: React.ComponentProps<typeof DrawerPrimitive.Root>) {
-  return <DrawerPrimitive.Root data-slot="drawer" {...props} />;
+  const { onOpenChange } = props as any;
+  // Use scroll lock helpers
+  const handleOpenChange = (open: boolean) => {
+    try {
+      if (open) {
+        // lock
+        const { lockBodyScroll } = require('../../lib/scrollLock');
+        lockBodyScroll();
+      } else {
+        const { unlockBodyScroll } = require('../../lib/scrollLock');
+        unlockBodyScroll();
+      }
+    } catch (e) {
+      // ignore
+    }
+
+    if (typeof onOpenChange === 'function') onOpenChange(open);
+  };
+
+  return <DrawerPrimitive.Root data-slot="drawer" {...(props as any)} onOpenChange={handleOpenChange} />;
 }
 
 function DrawerTrigger({

@@ -226,7 +226,7 @@ export function EnhancedBabyDevelopmentModal({
             <ScrollArea className="h-[90vh]">
               <div className="relative">
                 {/* Header */}
-                <div className="sticky top-0 z-10 bg-gradient-to-br from-pink-100 to-purple-100 dark:from-pink-950 dark:to-purple-950 backdrop-blur-xl p-6 border-b border-border shadow-sm">
+                <div className="page-header sticky top-0 z-10 bg-gradient-to-br from-pink-100 to-purple-100 dark:from-pink-950 dark:to-purple-950 backdrop-blur-xl p-6 border-b border-border shadow-sm">
                   <div className="flex items-start justify-between mb-4">
                     <div className="flex items-center space-x-3">
                       <div className="p-3 bg-primary/20 rounded-full">

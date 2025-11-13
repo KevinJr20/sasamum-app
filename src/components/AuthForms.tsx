@@ -17,6 +17,7 @@ import {
   User,
   Calendar,
   ArrowLeft,
+  Loader2,
 } from "lucide-react";
 
 interface AuthFormsProps {
@@ -252,7 +253,7 @@ export function AuthForms({
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-secondary/20 to-accent/30 p-4 flex flex-col">
       {/* Header */}
-      <div className="flex items-center justify-between pt-2 pb-8">
+  <div className="page-header flex items-center justify-between pt-2 pb-8">
         <button
           onClick={onBack}
           className="w-10 h-10 bg-card/80 backdrop-blur-sm rounded-full flex items-center justify-center text-foreground hover:bg-card transition-colors"
@@ -295,6 +296,7 @@ export function AuthForms({
                   onClick={() => setIsProviderMode(false)}
                   className={`px-3 py-1 rounded-full text-sm ${!isProviderMode ? "bg-primary text-primary-foreground" : "bg-card/60 text-muted-foreground"}`}
                   aria-pressed={!isProviderMode}
+                  aria-label="Select Mama role"
                 >
                   Mama
                 </button>
@@ -303,6 +305,7 @@ export function AuthForms({
                   onClick={() => setIsProviderMode(true)}
                   className={`px-3 py-1 rounded-full text-sm ${isProviderMode ? "bg-primary text-primary-foreground" : "bg-card/60 text-muted-foreground"}`}
                   aria-pressed={isProviderMode}
+                  aria-label="Select Healthcare provider role"
                 >
                   Healthcare provider
                 </button>
@@ -316,12 +319,16 @@ export function AuthForms({
                 <h3 className="text-lg font-medium">Almost there — confirm your email</h3>
                 <p className="text-sm text-muted-foreground">We've sent a confirmation link to <strong>{formData.email}</strong>. Please check your inbox and click the link to verify your account.</p>
                 <div className="flex gap-3 justify-center pt-4">
-                  <Button onClick={confirmEmailVerified} className="bg-primary">I've verified</Button>
-                  <Button variant="outline" onClick={resendVerification}>Resend</Button>
-                </div>
+                    <Button onClick={confirmEmailVerified} className="bg-primary" aria-label="I have verified my email">I've verified</Button>
+                    <Button variant="outline" onClick={resendVerification} aria-label="Resend verification email">Resend</Button>
+                  </div>
               </div>
             ) : (
-            <form onSubmit={handleSubmit} className="space-y-4">
+            <form onSubmit={handleSubmit} className="space-y-4" aria-busy={isSubmitting}>
+              {/* Accessible live region for validation feedback */}
+              <div aria-live="polite" role="status" className="sr-only">
+                {Object.values(errors)[0] || ''}
+              </div>
               {!isLogin && (
                 <motion.div
                   initial={{ opacity: 0, height: 0 }}
@@ -498,12 +505,19 @@ export function AuthForms({
               <Button
                 type="submit"
                 disabled={isSubmitting}
-                className="w-full bg-primary hover:bg-primary/90 text-primary-foreground py-6"
+                aria-disabled={isSubmitting}
+                aria-label={isSubmitting ? 'Processing request' : isLogin ? 'Submit login form' : 'Submit registration form'}
+                className={`w-full bg-primary hover:bg-primary/90 text-primary-foreground py-6 ${isSubmitting ? 'opacity-60 cursor-not-allowed' : ''}`}
                 size="lg"
               >
-                {isSubmitting ? "..." : (
+                {isSubmitting ? (
                   <>
-                    {isProviderMode 
+                    <Loader2 className="animate-spin mr-2 h-5 w-5 inline-block" aria-hidden="true" />
+                    Processing...
+                  </>
+                ) : (
+                  <>
+                    {isProviderMode
                       ? (isLogin ? "Access Provider Portal" : "Register as Provider")
                       : (isLogin ? "Welcome Home, Mama" : "Begin My Journey")}
                   </>

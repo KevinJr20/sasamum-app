@@ -343,7 +343,7 @@ export function SasaMumAI({ userName = "Brenda", currentWeek = 12, currentScreen
             >
             <Card className="shadow-2xl border-2 border-primary/20 overflow-hidden flex flex-col h-[calc(100vh-120px)] sm:h-[600px] max-h-[calc(100vh-120px)]">
               {/* Header */}
-              <div className="bg-gradient-to-r from-pink-500 to-rose-600 p-4 flex items-center justify-between">
+              <div className="page-header bg-gradient-to-r from-pink-500 to-rose-600 p-4 flex items-center justify-between">
                 <div className="flex items-center space-x-3">
                   <div className="w-10 h-10 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center">
                     <Bot className="w-6 h-6 text-white" />

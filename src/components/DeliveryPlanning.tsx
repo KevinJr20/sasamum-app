@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { ArrowLeft, MapPin, Hospital, AlertTriangle, CheckCircle, Navigation, Phone, Baby } from 'lucide-react';
+import TopBar from './TopBar';
 import { Button } from './ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { Badge } from './ui/badge';
@@ -98,19 +99,13 @@ export function DeliveryPlanning({ onBack }: DeliveryPlanningProps) {
 
   return (
     <div className="min-h-screen bg-background pb-20">
-      {/* Header */}
-      <div className="sticky-header">
-        <div className="flex items-center gap-4 p-4">
-          <Button variant="ghost" size="icon" onClick={onBack}>
-            <ArrowLeft className="w-5 h-5" />
-          </Button>
-          <div className="flex-1">
-            <h1 className="text-xl text-foreground">Delivery Planning</h1>
-            <p className="text-sm text-muted-foreground">AI-powered recommendations</p>
-          </div>
-          <Baby className="w-6 h-6 text-primary" />
-        </div>
-      </div>
+      <TopBar
+        title={<>Delivery Planning</>}
+        subtitle={<>AI-powered recommendations</>}
+        onBack={onBack}
+        right={<Baby className="w-6 h-6 text-primary" />}
+        sticky={false}
+      />
 
       <div className="pt-20 p-4 space-y-6">
         {/* Estimated Delivery Date */}

@@ -108,7 +108,7 @@ export function ImpactTracker({ onBack }: ImpactTrackerProps) {
   return (
     <div className="min-h-screen bg-background pb-20">
       {/* Header */}
-      <div className="sticky-header">
+  <div className="page-header sticky-header">
         <div className="flex items-center gap-4 p-4">
           <Button variant="ghost" size="icon" onClick={onBack}>
             <ArrowLeft className="w-5 h-5" />

@@ -149,7 +149,7 @@ export function HeaderMenu({
           >
             <div className="flex flex-col h-full">
               {/* Header */}
-              <div className="flex items-center justify-between p-4 border-b border-border">
+              <div className="page-header flex items-center justify-between p-4 border-b border-border">
                 <h2 className="text-lg text-foreground">Menu</h2>
                 <Button variant="ghost" size="sm" onClick={onClose} className="p-2">
                   <X className="w-5 h-5" />

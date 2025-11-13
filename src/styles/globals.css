@@ -166,6 +166,18 @@
     padding-top: calc(4rem + env(safe-area-inset-top)); /* Notch support */
   }
 
+  /* Helpful utility to mark the top header in a page. Developers can add
+     `className="page-header"` to a header wrapper and it will behave as a
+     sticky header with the design system defaults. */
+  .page-header {
+    position: sticky;
+    top: 0;
+    z-index: 40;
+    background-color: rgba(255,255,255,0.95);
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--color-border);
+  }
+
   /* Smooth Scrolling */
   .smooth-scroll {
     scroll-behavior: smooth;

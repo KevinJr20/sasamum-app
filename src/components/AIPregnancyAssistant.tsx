@@ -286,8 +286,8 @@ export function AIPregnancyAssistant({
       transition={{ duration: 0.6 }}
       className="min-h-screen bg-background w-full flex flex-col"
     >
-      {/* Header */}
-      <div className="flex items-center justify-between p-4 bg-card border-b border-border">
+  {/* Header */}
+  <div className="page-header flex items-center justify-between p-4 bg-card border-b border-border">
         <Button variant="ghost" size="sm" onClick={onBack} className="p-2">
           <ArrowLeft className="w-6 h-6 text-foreground" />
         </Button>

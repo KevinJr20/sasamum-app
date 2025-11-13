@@ -20,6 +20,7 @@ import {
   Star,
   Shield
 } from 'lucide-react';
+import TopBar from './TopBar';
 
 interface EmergencyTransportProps {
   onBack: () => void;
@@ -193,16 +194,16 @@ export function EmergencyTransport({ onBack, userName = "Grace" }: EmergencyTran
       transition={{ duration: 0.6 }}
       className="min-h-screen bg-background w-full"
     >
-      {/* Sticky Header */}
-      <div className="sticky top-0 z-40 flex items-center justify-between p-4 bg-card/95 backdrop-blur-md border-b border-border shadow-sm">
-        <Button variant="ghost" size="sm" onClick={onBack} className="p-2">
-          <ArrowLeft className="w-5 h-5 sm:w-6 sm:h-6 text-foreground" />
-        </Button>
-        <h1 className="text-base sm:text-lg md:text-xl text-foreground">Emergency Transport</h1>
-        <Button variant="ghost" size="sm" className="p-2">
-          <MapPin className="w-5 h-5 sm:w-6 sm:h-6 text-foreground" />
-        </Button>
-      </div>
+      <TopBar
+        title="Emergency Transport"
+        onBack={onBack}
+        right={(
+          <Button variant="ghost" size="sm" className="p-2">
+            <MapPin className="w-5 h-5 sm:w-6 sm:h-6 text-foreground" />
+          </Button>
+        )}
+        sticky
+      />
 
       {/* Quick Emergency Button */}
       <div className="p-4 bg-red-50 dark:bg-red-950/20 border-b border-red-200 dark:border-red-900/30">
