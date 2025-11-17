@@ -2,39 +2,68 @@ name: CI
 
 on:
   pull_request:
-    branches: [main]
+    branches: [main]          # Run on every PR targeting main
   push:
-    branches: [main]
+    branches: [main]          # Run once after merge (not duplicated thanks to concurrency)
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
+permissions:
+  contents: read                  # Default, explicit is best practice
+  actions: read
+  checks: write                   # Needed for test reports (we'll add later)
+
 jobs:
   frontend:
     name: Frontend
     runs-on: ubuntu-latest
+    timeout-minutes: 20             # Fail fast if stuck (default is 360)
+    
     steps:
-      - uses: actions/checkout@v4
-      - name: Use Node.js
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0          # Needed for some tools (e.g. coverage, git history)
+
+      - name: Setup Node.js (LTS)
         uses: actions/setup-node@v4
         with:
-          node-version: '18'
-      - name: Install frontend deps
-        run: npm ci
-      - name: Run frontend type-check
+          node-version: lts/*     # Always latest LTS
+          cache: npm              # ← HUGE speed boost: caches node_modules
+
+      - name: Install dependencies
+        run: npm ci                   # Clean install from lockfile
+
+      - name: Type check
         run: npx tsc --noEmit
+
       - name: Build frontend
         run: npm run build
-      - name: Run frontend tests
-        run: npm test
+
+      - name: Run tests
+        run: npm test -- --coverage
+
+      # Optional but GOLD: Upload test results + coverage even on failure
+      - name: Upload test artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: frontend-test-report
+          path: |
+            coverage/
+            test-results/
+          retention-days: 14
 
   backend:
     name: Backend
     runs-on: ubuntu-latest
+    timeout-minutes: 25
+
     services:
       postgres:
-        image: postgres:15
+        image: postgres:15-alpine    # Smaller & faster than full postgres:15
         env:
           POSTGRES_DB: sasamum_test
           POSTGRES_USER: postgres
@@ -42,38 +71,75 @@ jobs:
         ports:
           - 5432:5432
         options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
+          --health-cmd="pg_isready -U postgres"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+
     steps:
-      - uses: actions/checkout@v4
-      - name: Use Node.js
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js (LTS)
         uses: actions/setup-node@v4
         with:
-          node-version: '18'
-      - name: Install backend deps
+          node-version: lts/*
+          cache: npm
+          cache-dependency-path: backend/package-lock.json   # Cache only backend node_modules
+
+      - name: Install backend dependencies
         run: |
           cd backend
           npm ci
-      - name: Build backend (TypeScript)
+
+      - name: Build TypeScript
         run: |
           cd backend
           npm run build
-      - name: Setup database and migrations
+
+      - name: Push Prisma schema to test DB
         env:
           DATABASE_URL: postgresql://postgres:postgres@localhost:5432/sasamum_test
         run: |
           cd backend
           npx prisma db push --skip-generate
-      - name: Run backend linting
+
+      - name: Run linting
         run: |
           cd backend
-          npm run lint --silent
+          npm run lint -- --quiet    # --quiet instead of --silent (more common)
+
       - name: Run backend tests
         env:
           DATABASE_URL: postgresql://postgres:postgres@localhost:5432/sasamum_test
         run: |
           cd backend
-          npm test
+          npm test -- --coverage
 
+      - name: Upload backend test artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: backend-test-report
+          path: |
+            backend/coverage/
+            backend/test-results/
+          retention-days: 14
+
+  # Optional: Show test results directly in PR
+  test-summary:
+    if: always()
+    needs: [frontend, backend]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+
+      - name: Publish Test Report
+        uses: dorny/test-reporter@v1
+        with:
+          name: Test Results
+          path: '**/test-results/*.xml'
+          reporter: jest-junit
