@@ -60,10 +60,6 @@ npm start  # or yarn start
 - TensorFlow Lite (AI Risk Prediction)
 - SQLite / Realm (Offline Data)
 
----
-
-## 🖼 Screenshots
-Add screenshots from the app interface here.
 
 ---
 
