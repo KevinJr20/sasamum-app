@@ -374,15 +374,15 @@ export default function App() {
     setCurrentScreen(screen);
   };
 
+  // Use navigation helper to compute back target and pop history
   const handleBack = () => {
+    // lazy-import to avoid circular issues in type-only contexts
+    const { getBackTarget, popHistory } = require('./lib/navigation');
+    const target = getBackTarget(screenHistory, 'dashboard');
     if (screenHistory.length > 0) {
-      const previousScreen =
-        screenHistory[screenHistory.length - 1];
-      setScreenHistory(screenHistory.slice(0, -1));
-      setCurrentScreen(previousScreen);
-    } else {
-      setCurrentScreen("dashboard");
+      setScreenHistory(popHistory(screenHistory));
     }
+    setCurrentScreen(target as AppScreen);
   };
 
   // Direct navigation handlers for bottom nav
@@ -556,14 +556,14 @@ export default function App() {
               {currentScreen === "calendar" && (
                 <DetailedCalendarPage
                   key="calendar"
-                  onBack={handleBackToDashboard}
+                  onBack={handleBack}
                 />
               )}
 
               {currentScreen === "hospitals" && (
                 <HospitalsMap
                   key="hospitals"
-                  onBack={handleBackToDashboard}
+                  onBack={handleBack}
                   onNavigate={(screen) =>
                     setCurrentScreen(screen as AppScreen)
                   }
@@ -573,7 +573,7 @@ export default function App() {
               {currentScreen === "chat" && (
                 <ChatList
                   key="chat"
-                  onBack={handleBackToDashboard}
+                  onBack={handleBack}
                   onChatSelect={handleChatSelect}
                 />
               )}
@@ -589,49 +589,49 @@ export default function App() {
               {currentScreen === "profile" && (
                 <SuperEnhancedProfilePage
                   key="profile"
-                  onBack={handleBackToDashboard}
+                  onBack={handleBack}
                 />
               )}
 
               {currentScreen === "photos" && (
                 <PhotoJournal
                   key="photos"
-                  onBack={handleBackToDashboard}
+                  onBack={handleBack}
                 />
               )}
 
               {currentScreen === "food" && (
                 <FoodNutritionPage
                   key="food"
-                  onBack={handleBackToDashboard}
+                  onBack={handleBack}
                 />
               )}
 
               {currentScreen === "baby-tracker" && (
                 <BabyTracker
                   key="baby-tracker"
-                  onBack={handleBackToDashboard}
+                  onBack={handleBack}
                 />
               )}
 
               {currentScreen === "marketplace" && (
                 <SasaMumMarketplace
                   key="marketplace"
-                  onBack={handleBackToDashboard}
+                  onBack={handleBack}
                 />
               )}
 
               {currentScreen === "health-symptom-guide" && (
                 <HealthSymptomGuide
                   key="health-symptom-guide"
-                  onBack={handleBackToDashboard}
+                  onBack={handleBack}
                 />
               )}
 
               {currentScreen === "mental-health" && (
                 <MentalHealthCheck
                   key="mental-health"
-                  onBack={handleBackToDashboard}
+                  onBack={handleBack}
                   onNavigateToChat={handleNavigateToChat}
                 />
               )}
@@ -639,14 +639,14 @@ export default function App() {
               {currentScreen === "articles-videos" && (
                 <ArticlesVideosPage
                   key="articles-videos"
-                  onBack={handleBackToDashboard}
+                  onBack={handleBack}
                 />
               )}
 
               {currentScreen === "settings" && (
                 <SettingsPage
                   key="settings"
-                  onBack={handleBackToDashboard}
+                  onBack={handleBack}
                   onSignOut={handleSignOut}
                 />
               )}
@@ -654,28 +654,28 @@ export default function App() {
               {currentScreen === "buddy-system" && (
                 <PregnancyBuddySystem
                   key="buddy-system"
-                  onBack={handleBackToDashboard}
+                  onBack={handleBack}
                 />
               )}
 
               {currentScreen === "contractions" && (
                 <ContractionMonitor
                   key="contractions"
-                  onBack={handleBackToDashboard}
+                  onBack={handleBack}
                 />
               )}
 
               {currentScreen === "transport" && (
                 <EmergencyTransport
                   key="transport"
-                  onBack={handleBackToDashboard}
+                  onBack={handleBack}
                 />
               )}
 
               {currentScreen === "childcare" && (
                 <ChildcareServices
                   key="childcare"
-                  onBack={handleBackToDashboard}
+                  onBack={handleBack}
                 />
               )}
 
@@ -689,49 +689,49 @@ export default function App() {
               {currentScreen === "medications" && (
                 <MedicationReminders
                   key="medications"
-                  onBack={handleBackToDashboard}
+                  onBack={handleBack}
                 />
               )}
 
               {currentScreen === "complications" && (
                 <PregnancyComplicationsSupport
                   key="complications"
-                  onBack={handleBackToDashboard}
+                  onBack={handleBack}
                 />
               )}
 
               {currentScreen === "vitals" && (
                 <VitalsTracking
                   key="vitals"
-                  onBack={handleBackToDashboard}
+                  onBack={handleBack}
                 />
               )}
 
               {currentScreen === "emergency-alert" && (
                 <EmergencyAlertSystem
                   key="emergency-alert"
-                  onBack={handleBackToDashboard}
+                  onBack={handleBack}
                 />
               )}
 
               {currentScreen === "birth-preparedness" && (
                 <BirthPreparednessToolkit
                   key="birth-preparedness"
-                  onBack={handleBackToDashboard}
+                  onBack={handleBack}
                 />
               )}
 
               {currentScreen === "ai-risk" && (
                 <AIRiskPrediction
                   key="ai-risk"
-                  onBack={handleBackToDashboard}
+                  onBack={handleBack}
                 />
               )}
 
               {currentScreen === "voice-nav" && (
                 <EnhancedVoiceNavigation
                   key="voice-nav"
-                  onBack={handleBackToDashboard}
+                  onBack={handleBack}
                   onNavigate={(screen) =>
                     setCurrentScreen(screen as AppScreen)
                   }
@@ -741,49 +741,49 @@ export default function App() {
               {currentScreen === "chw-portal" && (
                 <CHWPortal
                   key="chw-portal"
-                  onBack={handleBackToDashboard}
+                  onBack={handleBack}
                 />
               )}
 
               {currentScreen === "appointments" && (
                 <SmartAppointmentScheduler
                   key="appointments"
-                  onBack={handleBackToDashboard}
+                  onBack={handleBack}
                 />
               )}
 
               {currentScreen === "gamified-edu" && (
                 <SuperGamifiedEducation
                   key="gamified-edu"
-                  onBack={handleBackToDashboard}
+                  onBack={handleBack}
                 />
               )}
 
               {currentScreen === "digital-services" && (
                 <DigitalServices
                   key="digital-services"
-                  onBack={handleBackToDashboard}
+                  onBack={handleBack}
                 />
               )}
 
               {currentScreen === "delivery-plan" && (
                 <EnhancedDeliveryPlanning
                   key="delivery-plan"
-                  onBack={handleBackToDashboard}
+                  onBack={handleBack}
                 />
               )}
 
               {currentScreen === "wearables" && (
                 <WearablesIntegration
                   key="wearables"
-                  onBack={handleBackToDashboard}
+                  onBack={handleBack}
                 />
               )}
 
               {currentScreen === "impact" && (
                 <ImpactTracker
                   key="impact"
-                  onBack={handleBackToDashboard}
+                  onBack={handleBack}
                 />
               )}
             </AnimatePresence>

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { motion } from "framer-motion";
 import { ArrowLeft, Watch, Heart, Activity, Moon, TrendingUp, Bluetooth, Battery, RefreshCw } from 'lucide-react';
 import { Button } from './ui/button';
+import TopBar from './TopBar';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { Badge } from './ui/badge';
 import { Progress } from './ui/progress';
@@ -83,18 +84,14 @@ export function WearablesIntegration({ onBack }: WearablesIntegrationProps) {
   return (
     <div className="min-h-screen bg-background pb-20">
       {/* Header */}
-  <div className="page-header sticky-header">
-        <div className="flex items-center gap-4 p-4">
-          <Button variant="ghost" size="icon" onClick={onBack}>
-            <ArrowLeft className="w-5 h-5" />
-          </Button>
-          <div className="flex-1">
-            <h1 className="text-xl text-foreground">Wearables</h1>
-            <p className="text-sm text-muted-foreground">Device integration</p>
-          </div>
-          <Watch className="w-6 h-6 text-primary" />
-        </div>
-      </div>
+      <TopBar
+        title="Wearables"
+        subtitle="Device integration"
+        onBack={onBack}
+        right={<Watch className="w-6 h-6 text-primary" />}
+        sticky
+        className="sticky-header"
+      />
 
       <div className="pt-20 p-4 space-y-6">
         {/* Device Status */}

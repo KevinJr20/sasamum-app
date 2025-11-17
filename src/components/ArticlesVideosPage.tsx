@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Card, CardContent, CardHeader } from './ui/card';
 import { Button } from './ui/button';
+import TopBar from './TopBar';
 import { Input } from './ui/input';
 import { Badge } from './ui/badge';
 import { ImageWithFallback } from './figma/ImageWithFallback';
@@ -258,21 +259,22 @@ export function ArticlesVideosPage({ onBack, userName = "Brenda" }: ArticlesVide
     >
       <div className="max-w-7xl mx-auto w-full">{/* Responsive wrapper */}
       {/* Sticky Header */}
-      <div className="page-header sticky top-0 z-40 flex items-center justify-between p-4 bg-card/95 backdrop-blur-md border-b border-border shadow-sm">
-        <Button variant="ghost" size="sm" onClick={onBack} className="p-2">
-          <ArrowLeft className="w-6 h-6 text-foreground" />
-        </Button>
-        <h1 className="text-lg text-foreground">Articles & Videos</h1>
-        <Button 
-          variant="ghost" 
-          size="sm" 
-          onClick={fetchLatestContent}
-          disabled={isLoading}
-          className="p-2"
-        >
-          <RefreshCw className={`w-5 h-5 text-foreground ${isLoading ? 'animate-spin' : ''}`} />
-        </Button>
-      </div>
+      <TopBar
+        title="Articles & Videos"
+        onBack={onBack}
+        right={(
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={fetchLatestContent}
+            disabled={isLoading}
+            className="p-2"
+          >
+            <RefreshCw className={`w-5 h-5 text-foreground ${isLoading ? 'animate-spin' : ''}`} />
+          </Button>
+        )}
+        sticky
+      />
 
       {/* Search Bar */}
       <div className="p-4 bg-card border-b border-border">

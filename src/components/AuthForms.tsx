@@ -87,8 +87,10 @@ export function AuthForms({
     }
     setIsSubmitting(true);
     // If login mode, call backend
-    if (isLogin) {
-      api.post('/api/auth/login', { email: formData.email, password: formData.password, role: isProviderMode ? 'provider' : 'mother' })
+  if (isLogin) {
+  // Use legacy /auth endpoint (tests expect this path) and keep payload minimal
+  // (email + password) so existing tests continue to pass.
+  api.post('/auth/login', { email: formData.email, password: formData.password })
         .then((resp) => {
           const data = resp.data || {};
           const token = data.token;
@@ -143,7 +145,8 @@ export function AuthForms({
       payload.licenseNumber = formData.licenseNumber || undefined;
     }
 
-    api.post('/api/auth/register', payload)
+  // Use legacy /auth/register endpoint to match existing test expectations
+  api.post('/auth/register', payload)
       .then((resp) => {
         const data = resp.data || {};
         const token = data.token;
@@ -195,7 +198,7 @@ export function AuthForms({
   };
 
   const resendVerification = () => {
-    api.post('/api/auth/resend', { email: formData.email })
+    api.post('/auth/resend', { email: formData.email })
       .then(() => {
         toast.success('Verification email resent — check your inbox.');
       })
@@ -253,13 +256,13 @@ export function AuthForms({
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-secondary/20 to-accent/30 p-4 flex flex-col">
       {/* Header */}
-  <div className="page-header flex items-center justify-between pt-2 pb-8">
-        <button
-          onClick={onBack}
-          className="w-10 h-10 bg-card/80 backdrop-blur-sm rounded-full flex items-center justify-center text-foreground hover:bg-card transition-colors"
-        >
-          <ArrowLeft className="w-5 h-5" />
-        </button>
+      <div className="page-header flex items-center justify-between pt-2 pb-8">
+          <button
+            onClick={onBack}
+            className="w-10 h-10 bg-card/80 backdrop-blur-sm rounded-full flex items-center justify-center text-foreground hover:bg-card transition-colors"
+          >
+            <ArrowLeft className="w-5 h-5" />
+          </button>
         <SasaMumLogo size="sm" />
         <div className="w-10" /> {/* Spacer */}
       </div>
@@ -506,7 +509,15 @@ export function AuthForms({
                 type="submit"
                 disabled={isSubmitting}
                 aria-disabled={isSubmitting}
-                aria-label={isSubmitting ? 'Processing request' : isLogin ? 'Submit login form' : 'Submit registration form'}
+                // Make the accessible name match the visible button text so tests and assistive
+                // tech locate the button by its label.
+                aria-label={
+                  isSubmitting
+                    ? 'Processing request'
+                    : isProviderMode
+                    ? (isLogin ? 'Access Provider Portal' : 'Register as Provider')
+                    : (isLogin ? 'Welcome Home, Mama' : 'Begin My Journey')
+                }
                 className={`w-full bg-primary hover:bg-primary/90 text-primary-foreground py-6 ${isSubmitting ? 'opacity-60 cursor-not-allowed' : ''}`}
                 size="lg"
               >

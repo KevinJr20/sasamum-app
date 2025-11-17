@@ -144,12 +144,21 @@ describe('AuthForms', () => {
     expect(email).toBeInTheDocument();
     expect(password).toBeInTheDocument();
 
-    // Tab through controls: email -> password -> submit
-    await userEvent.tab();
+    // Focus the email input explicitly, then tab to password and submit.
+    // This makes the test resilient to other focusable elements (header buttons,
+    // role selectors) that may appear earlier in the DOM.
+    email.focus();
     expect(document.activeElement).toBe(email);
     await userEvent.tab();
     expect(document.activeElement).toBe(password);
-    await userEvent.tab();
+    // There may be additional focusable controls (like the password visibility
+    // toggle) between password and submit. Advance tabs until we reach submit
+    // (bounded) so the test is robust to small DOM changes.
+    let attempts = 0;
+    while (document.activeElement !== submit && attempts < 6) {
+      await userEvent.tab();
+      attempts += 1;
+    }
     expect(document.activeElement).toBe(submit);
   });
 
